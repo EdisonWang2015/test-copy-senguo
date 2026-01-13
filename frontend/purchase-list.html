@@ -629,65 +629,85 @@
             window.location.href = 'purchase-create.html';
         }
 
-        function loadOrders() {
+        async function loadOrders() {
             const contentArea = document.getElementById('contentArea');
-            const pageSize = 10;
-            let displayedCount = 0;
 
-            function renderBatch() {
-                const endIndex = Math.min(displayedCount + pageSize, orders.length);
-                const batch = orders.slice(displayedCount, endIndex);
+            try {
+                const response = await fetch('http://127.0.0.1:5000/api/purchase/list');
+                const result = await response.json();
 
-                const html = batch.map(o => {
-                    const d = new Date(o.date);
-                    return `<div class="order-card" onclick="goToDetail('${o.id}')">
-                        <div class="card-header">
-                            <div class="card-date">${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日</div>
-                            <div class="card-arrow">›</div>
-                        </div>
-                        <div class="card-body">
-                            <div class="farm-info">
-                                <div class="farm-info-item"><span class="farm-label">农户:</span><span class="farm-value">${o.farmer}</span></div>
-                                <div class="farm-info-item"><span class="farm-label">采购单位:</span><span class="farm-value">${o.buyer}</span></div>
-                            </div>
-                            <div class="items-label">采购规格</div>
-                            <table class="items-table">
-                                <thead>
-                                    <tr><th style="width:35%;">采购规格</th><th style="width:25%;">采购量</th><th style="width:15%;">单价</th><th style="width:25%;">采购金额</th></tr>
-                                </thead>
-                                <tbody>
-                                    ${o.items.map(i => `<tr><td>${i.name}</td><td>${i.spec}</td><td>${i.price}</td><td class="item-amount">${i.amount}</td></tr>`).join('')}
-                                </tbody>
-                            </table>
-                            <div class="divider"></div>
-                            <div class="summary-row">
-                                <span class="summary-label">合计</span>
-                                <span class="summary-content">共${o.summary.totalOrders}单、数量:${o.summary.totalQty}、毛:${o.summary.grossWeight}kg、净:${o.summary.netWeight}kg、押金:${o.summary.deposit.toFixed(1)}、总货款:${o.summary.totalAmount.toFixed(1)}</span>
-                            </div>
-                        </div>
-                    </div>`;
-                }).join('');
+                if (result.code === 200 && result.data.orders.length > 0) {
+                    const orders = result.data.orders;
+                    const pageSize = 10;
+                    let displayedCount = 0;
 
-                contentArea.innerHTML += html;
-                displayedCount = endIndex;
+                    function renderBatch() {
+                        const endIndex = Math.min(displayedCount + pageSize, orders.length);
+                        const batch = orders.slice(displayedCount, endIndex);
 
-                // 如果还有更多数据，显示loading
-                if (displayedCount < orders.length) {
-                    const loadingHtml = `<div class="loading" id="loading">
-                        <span class="loading-spinner"></span>加载中...
-                    </div>`;
-                    contentArea.innerHTML += loadingHtml;
+                        const html = batch.map(o => {
+                            const d = new Date(o.created_at);
+                            // 计算总计
+                            const totalQty = o.items.reduce((sum, i) => sum + i.quantity, 0);
+                            const totalGross = o.items.reduce((sum, i) => sum + i.gross_weight, 0);
+                            const totalNet = o.items.reduce((sum, i) => sum + (i.gross_weight - i.box_weight), 0);
+                            const totalAmount = o.total_amount || 0;
 
-                    setTimeout(() => {
-                        const loadingEl = document.getElementById('loading');
-                        if (loadingEl) loadingEl.remove();
-                        renderBatch();
-                    }, 800);
+                            return `<div class="order-card" onclick="goToDetail('${o.id}')">
+                                <div class="card-header">
+                                    <div class="card-date">${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日</div>
+                                    <div class="card-arrow">›</div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="farm-info">
+                                        <div class="farm-info-item"><span class="farm-label">农户:</span><span class="farm-value">${o.farmer_name}</span></div>
+                                        <div class="farm-info-item"><span class="farm-label">加工厂:</span><span class="farm-value">${o.factory_name}</span></div>
+                                    </div>
+                                    <div class="items-label">采购规格</div>
+                                    <table class="items-table">
+                                        <thead>
+                                            <tr><th style="width:35%;">采购规格</th><th style="width:25%;">采购量</th><th style="width:15%;">单价</th><th style="width:25%;">采购金额</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            ${o.items.map(i => `<tr><td>${i.product_name}</td><td>${i.spec}</td><td>¥${i.unit_price}</td><td class="item-amount">¥${i.total_amount}</td></tr>`).join('')}
+                                        </tbody>
+                                    </table>
+                                    <div class="divider"></div>
+                                    <div class="summary-row">
+                                        <span class="summary-label">合计</span>
+                                        <span class="summary-content">共1单、数量:${totalQty}、毛:${totalGross.toFixed(1)}kg、净:${totalNet.toFixed(1)}kg、总货款:¥${totalAmount.toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            </div>`;
+                        }).join('');
+
+                        contentArea.innerHTML += html;
+                        displayedCount = endIndex;
+
+                        // 如果还有更多数据，显示loading
+                        if (displayedCount < orders.length) {
+                            const loadingHtml = `<div class="loading" id="loading">
+                                <span class="loading-spinner"></span>加载中...
+                            </div>`;
+                            contentArea.innerHTML += loadingHtml;
+
+                            setTimeout(() => {
+                                const loadingEl = document.getElementById('loading');
+                                if (loadingEl) loadingEl.remove();
+                                renderBatch();
+                            }, 800);
+                        }
+                    }
+
+                    contentArea.innerHTML = '';
+                    renderBatch();
+                } else {
+                    contentArea.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#999;font-size:14px;">暂无采购单数据</div>';
                 }
+            } catch (error) {
+                console.error('加载失败:', error);
+                contentArea.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#ef5350;font-size:14px;">加载失败，请检查后端服务</div>';
             }
-
-            contentArea.innerHTML = '';
-            renderBatch();
         }
 
         document.addEventListener('DOMContentLoaded', loadOrders);

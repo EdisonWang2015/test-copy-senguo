@@ -1674,16 +1674,19 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        supplier_name: formData.farmerName,
-                        product_name: formData.products[0].name,
-                        quantity: formData.products[0].quantity,
-                        unit_price: formData.products[0].price,
+                        factory_name: formData.factoryName,
                         category: formData.categoryName,
+                        farmer_name: formData.farmerName,
+                        harvest_date: formData.harvestDate,
                         items: formData.products.map(p => ({
-                            name: p.name,
+                            product_name: p.name,
                             spec: p.spec,
-                            price: p.price,
-                            amount: p.price * p.quantity
+                            quantity: p.quantity,
+                            gross_weight: p.grossWeight || 0,
+                            box_weight: p.boxWeight || 0,
+                            unit_price: p.price,
+                            discount_amount: p.discountAmount || 0,
+                            total_amount: p.totalAmount
                         }))
                     })
                 });

@@ -32,12 +32,22 @@ def create_purchase_order():
     创建采购单接口
     Request Body:
     {
-        "supplier_name": "供应商名称",
-        "product_name": "产品名称",
-        "quantity": 100,
-        "unit_price": 10.5,
+        "factory_name": "加工厂名称",
         "category": "蔬菜" or "水果",
-        "items": [{"name": "产品名", "spec": "规格", "price": 22, "amount": 22}],  // 可选
+        "farmer_name": "农户名称",
+        "harvest_date": "2024-01-15",
+        "items": [
+            {
+                "product_name": "产品名",
+                "spec": "规格",
+                "quantity": 10,
+                "gross_weight": 50,
+                "box_weight": 5,
+                "unit_price": 22,
+                "discount_amount": 0,
+                "total_amount": 220
+            }
+        ],
         "remark": "备注"  // 可选
     }
     """
@@ -52,7 +62,7 @@ def create_purchase_order():
                 'data': None
             }), 400
 
-        required_fields = ['supplier_name', 'product_name', 'quantity', 'unit_price', 'category']
+        required_fields = ['factory_name', 'category', 'farmer_name', 'harvest_date', 'items']
         missing_fields = [field for field in required_fields if field not in data or data[field] is None]
 
         if missing_fields:
@@ -62,40 +72,41 @@ def create_purchase_order():
                 'data': None
             }), 400
 
-        # 参数验证
-        try:
-            quantity = int(data['quantity'])
-            unit_price = float(data['unit_price'])
-
-            if quantity <= 0:
-                raise ValueError('数量必须大于0')
-            if unit_price < 0:
-                raise ValueError('单价不能为负数')
-        except (ValueError, TypeError) as e:
+        # 验证 items 不为空
+        items = data.get('items', [])
+        if not items or len(items) == 0:
             return jsonify({
                 'code': 400,
-                'message': f'参数验证失败: {str(e)}',
+                'message': '至少需要添加一个货品',
                 'data': None
             }), 400
 
+        # 验证每个货品的必需字段
+        for idx, item in enumerate(items):
+            item_required = ['product_name', 'spec', 'quantity', 'gross_weight', 'box_weight', 'unit_price', 'total_amount']
+            item_missing = [f for f in item_required if f not in item or item[f] is None]
+            if item_missing:
+                return jsonify({
+                    'code': 400,
+                    'message': f'第{idx + 1}个货品缺少字段: {", ".join(item_missing)}',
+                    'data': None
+                }), 400
+
         # 生成订单ID
         order_id = get_next_order_id()
-        total_amount = quantity * unit_price
 
         # 创建采购单数据
         purchase_order = {
             'id': order_id,
-            'supplier_name': data['supplier_name'],
-            'product_name': data['product_name'],
-            'quantity': quantity,
-            'unit_price': unit_price,
-            'total_amount': round(total_amount, 2),
+            'factory_name': data['factory_name'],
             'category': data['category'],
+            'farmer_name': data['farmer_name'],
+            'harvest_date': data['harvest_date'],
             'status': '待审批',
             'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'created_by': data.get('created_by', '系统'),
             'remark': data.get('remark', ''),
-            'items': data.get('items', [])
+            'items': items
         }
 
         # 保存到数据库
@@ -104,7 +115,10 @@ def create_purchase_order():
         return jsonify({
             'code': 200,
             'message': '采购单创建成功',
-            'data': purchase_order
+            'data': {
+                'order_id': order_id,
+                'redirect_url': '/frontend/purchase-list.html'
+            }
         }), 201
 
     except Exception as e:

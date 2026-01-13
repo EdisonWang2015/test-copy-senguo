@@ -26,15 +26,14 @@ def init_database():
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS purchase_orders (
                 id TEXT PRIMARY KEY,
-                supplier_name TEXT NOT NULL,
-                product_name TEXT NOT NULL,
-                quantity INTEGER NOT NULL,
-                unit_price REAL NOT NULL,
-                total_amount REAL NOT NULL,
+                factory_name TEXT NOT NULL,
                 category TEXT NOT NULL,
+                farmer_name TEXT NOT NULL,
+                harvest_date TEXT NOT NULL,
                 status TEXT NOT NULL DEFAULT '待审批',
                 created_at TEXT NOT NULL,
                 created_by TEXT NOT NULL DEFAULT '系统',
+                total_amount REAL NOT NULL DEFAULT 0,
                 remark TEXT DEFAULT ''
             )
         ''')
@@ -44,10 +43,14 @@ def init_database():
             CREATE TABLE IF NOT EXISTS purchase_items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 order_id TEXT NOT NULL,
-                item_name TEXT NOT NULL,
+                product_name TEXT NOT NULL,
                 spec TEXT NOT NULL,
-                price REAL NOT NULL,
-                amount REAL NOT NULL,
+                quantity REAL NOT NULL,
+                gross_weight REAL NOT NULL,
+                box_weight REAL NOT NULL,
+                unit_price REAL NOT NULL,
+                discount_amount REAL NOT NULL,
+                total_amount REAL NOT NULL,
                 FOREIGN KEY (order_id) REFERENCES purchase_orders(id) ON DELETE CASCADE
             )
         ''')
@@ -111,36 +114,42 @@ def create_order(order_data):
     cursor = conn.cursor()
 
     try:
+        # 计算总金额
+        total_amount = sum(item.get('total_amount', 0) for item in order_data['items'])
+
         cursor.execute('''
             INSERT INTO purchase_orders
-            (id, supplier_name, product_name, quantity, unit_price, total_amount, category, status, created_at, created_by, remark)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (id, factory_name, category, farmer_name, harvest_date, status, created_at, created_by, total_amount, remark)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             order_data['id'],
-            order_data['supplier_name'],
-            order_data['product_name'],
-            order_data['quantity'],
-            order_data['unit_price'],
-            order_data['total_amount'],
+            order_data['factory_name'],
             order_data['category'],
-            order_data['status'],
+            order_data['farmer_name'],
+            order_data['harvest_date'],
+            order_data.get('status', '待审批'),
             order_data['created_at'],
-            order_data['created_by'],
-            order_data['remark']
+            order_data.get('created_by', '系统'),
+            total_amount,
+            order_data.get('remark', '')
         ))
 
-        # 如果有明细项，插入明细表
+        # 插入明细项
         if 'items' in order_data and order_data['items']:
             for item in order_data['items']:
                 cursor.execute('''
-                    INSERT INTO purchase_items (order_id, item_name, spec, price, amount)
-                    VALUES (?, ?, ?, ?, ?)
+                    INSERT INTO purchase_items (order_id, product_name, spec, quantity, gross_weight, box_weight, unit_price, discount_amount, total_amount)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     order_data['id'],
-                    item['name'],
+                    item['product_name'],
                     item['spec'],
-                    item['price'],
-                    item['amount']
+                    item['quantity'],
+                    item['gross_weight'],
+                    item['box_weight'],
+                    item['unit_price'],
+                    item['discount_amount'],
+                    item['total_amount']
                 ))
 
         conn.commit()
@@ -182,7 +191,7 @@ def get_orders(category=None, status=None):
         for row in rows:
             order = dict(row)
             # 获取明细项
-            cursor.execute('SELECT item_name as name, spec, price, amount FROM purchase_items WHERE order_id = ?', (order['id'],))
+            cursor.execute('SELECT product_name, spec, quantity, gross_weight, box_weight, unit_price, discount_amount, total_amount FROM purchase_items WHERE order_id = ?', (order['id'],))
             items = [dict(row) for row in cursor.fetchall()]
             order['items'] = items
             orders.append(order)
@@ -207,7 +216,7 @@ def get_order_by_id(order_id):
         if row:
             order = dict(row)
             # 获取明细项
-            cursor.execute('SELECT item_name as name, spec, price, amount FROM purchase_items WHERE order_id = ?', (order_id,))
+            cursor.execute('SELECT product_name, spec, quantity, gross_weight, box_weight, unit_price, discount_amount, total_amount FROM purchase_items WHERE order_id = ?', (order_id,))
             items = [dict(row) for row in cursor.fetchall()]
             order['items'] = items
             return order
