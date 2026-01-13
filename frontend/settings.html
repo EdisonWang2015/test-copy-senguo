@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>设置 - 水果蔬菜采购管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            /* 主色调 */
+            --primary-color: #2A9D8F;
+            --primary-light: #3DB8A8;
+            --primary-dark: #248A7D;
+
+            /* 背景色 */
+            --bg-color: #F5F6FA;
+
+            /* 文字颜色 */
+            --text-primary: #1A1A2E;
+            --text-secondary: #6B7280;
+            --text-light: #9CA3AF;
+
+            /* 间距 */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 16px;
+            --spacing-xl: 20px;
+
+            /* 圆角 */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 18px;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow: hidden;
+            font-size: 14px;
+        }
+
+        .app-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 480px;
+            margin: 0 auto;
+            background: var(--bg-color);
+        }
+
+        /* ==================== 顶部导航栏 ==================== */
+        .top-nav-bar {
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px var(--spacing-lg);
+            flex-shrink: 0;
+            height: 50px;
+            border-bottom: 1px solid #E8E8E8;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* ==================== 内容区域 ==================== */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: var(--spacing-md);
+            padding-bottom: 70px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* ==================== 用户信息卡片 ==================== */
+        .profile-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-md);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+        }
+
+        .profile-content {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-lg);
+        }
+
+        .user-avatar-box {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            background: #E8E8E8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-right: var(--spacing-md);
+        }
+
+        .user-avatar-box .avatar-icon {
+            font-size: 10px;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+        }
+
+        .user-avatar-box .avatar-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .profile-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .shop-name-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .shop-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 100%;
+        }
+
+        .tags-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+        }
+
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .tag.premium {
+            background: #374151;
+            color: white;
+        }
+
+        .tag.premium .tag-icon {
+            margin-right: 3px;
+        }
+
+        .tag.trial {
+            background: #FFF4E5;
+            color: #F59E0B;
+        }
+
+        .expire-text {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .profile-arrow {
+            flex-shrink: 0;
+            margin-left: var(--spacing-sm);
+            color: var(--text-light);
+        }
+
+        .profile-arrow svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ==================== 分组标题 ==================== */
+        .group-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+            padding-left: var(--spacing-xs);
+            margin-top: var(--spacing-md);
+        }
+
+        .group-title:first-of-type {
+            margin-top: 0;
+        }
+
+        /* ==================== 设置卡片 ==================== */
+        .settings-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-md);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-md) var(--spacing-lg);
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .settings-item:active {
+            background: #F8F9FA;
+        }
+
+        .settings-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 48px;
+            right: 0;
+            height: 1px;
+            background: #F0F0F0;
+        }
+
+        .item-icon {
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: var(--spacing-md);
+            flex-shrink: 0;
+        }
+
+        .item-icon svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--text-primary);
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .item-subtitle {
+            font-size: 12px;
+            color: var(--text-light);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .item-right {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .item-count {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-right: var(--spacing-xs);
+        }
+
+        .item-value {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-right: var(--spacing-xs);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 120px;
+        }
+
+        .item-arrow {
+            color: var(--text-light);
+        }
+
+        .item-arrow svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ==================== 底部导航栏 ==================== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            border-top: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-around;
+            align-items: stretch;
+            z-index: 200;
+            max-width: 480px;
+            margin: 0 auto;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #9CA3AF;
+            text-decoration: none;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            transition: stroke 0.2s;
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* ==================== Toast ==================== */
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            z-index: 9999;
+            display: none;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            .app-wrapper {
+                max-width: 100vw;
+            }
+
+            .bottom-nav {
+                max-width: 100vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- 顶部导航栏 -->
+        <div class="top-nav-bar">
+            <div class="page-title">设置</div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content-area">
+            <!-- 用户信息卡片 -->
+            <div class="profile-card" onclick="showToast('用户信息')">
+                <div class="profile-content">
+                    <div class="user-avatar-box">
+                        <svg class="avatar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <span class="avatar-name">王章</span>
+                    </div>
+                    <div class="profile-info">
+                        <div class="shop-name-row">
+                            <span class="shop-name">王章产地测试店铺很长很长很长...</span>
+                        </div>
+                        <div class="tags-row">
+                            <span class="tag premium">
+                                <svg class="tag-icon" width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                                </svg>
+                                定制版
+                            </span>
+                            <span class="tag trial">试用</span>
+                            <span class="expire-text">将于2026-09-04到期</span>
+                        </div>
+                    </div>
+                    <div class="profile-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 店铺设置分组 -->
+            <div class="group-title">店铺设置</div>
+            <div class="settings-card">
+                <div class="settings-item" onclick="showToast('经营类目')">
+                    <div class="item-icon">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">经营类目</div>
+                    </div>
+                    <div class="item-right">
+                        <span class="item-count">共4个</span>
+                        <div class="item-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-item" onclick="showToast('加工厂')">
+                    <div class="item-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 21h18v-8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8z"></path>
+                            <path d="M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"></path>
+                        </svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">加工厂</div>
+                    </div>
+                    <div class="item-right">
+                        <span class="item-count">共2个</span>
+                        <div class="item-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-item" onclick="showToast('员工管理')">
+                    <div class="item-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">员工管理</div>
+                    </div>
+                    <div class="item-right">
+                        <span class="item-count">共7个</span>
+                        <div class="item-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 通用功能分组 -->
+            <div class="settings-card">
+                <div class="settings-item" onclick="showToast('业务功能设置')">
+                    <div class="item-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 1v6m0 6v6"></path>
+                            <path d="m4.93 4.93 4.24 4.24"></path>
+                            <path d="m19.07 4.93-4.24 4.24"></path>
+                            <path d="M15.54 8.46l4.24-4.24"></path>
+                            <path d="m8.46 15.54 4.24 4.24"></path>
+                            <path d="M1 12h6"></path>
+                            <path d="m17 12h6"></path>
+                            <path d="m4.93 19.07 4.24-4.24"></path>
+                            <path d="m19.07 19.07-4.24-4.24"></path>
+                        </svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">业务功能设置</div>
+                    </div>
+                    <div class="item-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="settings-item" onclick="showToast('打印设置')">
+                    <div class="item-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M6 9V2h12v7"></path>
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                            <path d="M6 14h12v8H6z"></path>
+                        </svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">打印设置</div>
+                    </div>
+                    <div class="item-arrow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="settings-item" onclick="showToast('通用设置')">
+                    <div class="item-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">通用设置</div>
+                    </div>
+                    <div class="item-right">
+                        <span class="item-value">重量单位/精度设置</span>
+                        <div class="item-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 个人设置分组 -->
+            <div class="group-title">个人设置</div>
+            <div class="settings-card">
+                <div class="settings-item" onclick="showToast('打印机')">
+                    <div class="item-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M6 9V2h12v7"></path>
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                            <path d="M6 14h12v8H6z"></path>
+                        </svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">打印机</div>
+                    </div>
+                    <div class="item-right">
+                        <span class="item-value">老王打印机</span>
+                        <div class="item-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="settings-item" onclick="showToast('个性设置')">
+                    <div class="item-icon">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"></path>
+                        </svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">个性设置</div>
+                    </div>
+                    <div class="item-right">
+                        <span class="item-value">键盘语音/蓝牙秤/字体</span>
+                        <div class="item-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部导航栏 -->
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="switchToHome()">
+                <div class="nav-icon">
+                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11h-6v-6h-6v6H3V9z"></path></svg>
+                </div>
+                <div class="nav-label">首页</div>
+            </div>
+            <div class="nav-item" onclick="switchToFactory()">
+                <div class="nav-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C7 2 2 6 2 12s5 10 10 10 10-4 10-10S17 2 12 2z"></path><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z"></path></svg>
+                </div>
+                <div class="nav-label">加工厂</div>
+            </div>
+            <div class="nav-item" onclick="switchToSales()">
+                <div class="nav-icon">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="2"></circle><path d="M2 12h20"></path><path d="M6 12v4M12 12v4M18 12v4"></path></svg>
+                </div>
+                <div class="nav-label">找销路</div>
+            </div>
+            <div class="nav-item active">
+                <div class="nav-icon">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"></path></svg>
+                </div>
+                <div class="nav-label">设置</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Toast提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // 切换到首页
+        function switchToHome() {
+            window.location.href = 'index.html';
+        }
+
+        // 切换到加工厂
+        function switchToFactory() {
+            // 在实际项目中可以加载对应的页面内容
+            window.location.href = 'index.html';
+        }
+
+        // 切换到找销路
+        function switchToSales() {
+            // 在实际项目中可以加载对应的页面内容
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

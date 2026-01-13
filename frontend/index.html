@@ -11,350 +11,392 @@
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
-        
+
+        :root {
+            /* 主色调 */
+            --primary-color: #2A9D8F;
+            --primary-light: #3DB8A8;
+            --primary-dark: #248A7D;
+
+            /* 背景色 */
+            --bg-color: #F5F6FA;
+
+            /* 模块背景色 */
+            --sales-bg: #FFF0EB;
+            --purchase-bg: #E8F5F2;
+            --expense-bg: #EFF6FF;
+
+            /* 文字颜色 */
+            --text-primary: #1A1A2E;
+            --text-secondary: #6B7280;
+            --text-light: #9CA3AF;
+
+            /* 间距 */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 16px;
+            --spacing-xl: 20px;
+
+            /* 圆角 */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-xl: 18px;
+        }
+
         html, body {
             width: 100%;
             height: 100%;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
             overflow: hidden;
+            font-size: 14px;
         }
-        
+
         .app-wrapper {
             display: flex;
             flex-direction: column;
             height: 100vh;
             max-width: 480px;
             margin: 0 auto;
-            background: white;
+            background: var(--bg-color);
         }
-        
-        .header {
-            background-color: white;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
+
+        /* ==================== 顶部导航栏 ==================== */
+        .top-nav-bar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px var(--spacing-lg);
             flex-shrink: 0;
-            height: 70px;
+            height: 56px;
+            box-shadow: 0 2px 8px rgba(42, 157, 143, 0.15);
+        }
+
+        .shop-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: 0.3px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        
-        .factory-selector {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0;
-        }
-        
-        .factory-label {
-            display: none;
-        }
-        
-        .factory-select {
-            width: auto;
-            max-width: 320px;
-            padding: 12px 15px;
-            border: none;
-            border-radius: 0;
-            font-size: 18px;
-            font-weight: 600;
-            background-color: transparent;
-            color: #333;
-            -webkit-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M1 4l5 4 5-4'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 8px center;
-            padding-right: 25px;
             cursor: pointer;
-            text-align: center;
-            text-overflow: ellipsis;
+            border: 2px solid rgba(255, 255, 255, 0.3);
         }
-        
-        .factory-select option {
-            text-align: left;
-            max-width: 320px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+
+        .user-avatar svg {
+            width: 20px;
+            height: 20px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
-        
-        .factory-select:focus {
-            outline: none;
-            border-bottom-color: #999;
-        }
-        
+
+        /* ==================== 内容区域 ==================== */
         .content-area {
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
+            padding: var(--spacing-md);
             padding-bottom: 70px;
             -webkit-overflow-scrolling: touch;
         }
-        
-        .page {
-            display: none;
+
+        /* ==================== 通用卡片样式 ==================== */
+        .card {
+            background: white;
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--spacing-md);
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
-        
-        .page.active {
-            display: block;
+
+        .card-header {
+            padding: var(--spacing-md) var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #F0F0F0;
         }
-        
-        .home-page {
-            padding: 15px;
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
         }
-        
-        .section-title {
+
+        .card-subtitle {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-left: var(--spacing-xs);
+        }
+
+        .card-body {
+            padding: var(--spacing-lg);
+        }
+
+        /* ==================== 模块A：经营概况 ==================== */
+        .overview-card .card-header {
+            padding: var(--spacing-sm) var(--spacing-lg);
+        }
+
+        .tab-switch {
+            display: flex;
+            background: #F0F0F0;
+            border-radius: var(--radius-md);
+            padding: 3px;
+        }
+
+        .tab-item {
+            padding: 6px 16px;
             font-size: 13px;
             font-weight: 600;
-            color: #666;
-            margin-bottom: 12px;
-            padding-left: 10px;
-            margin-top: 8px;
-        }
-        
-        .section-title:first-of-type {
-            margin-top: 0;
-        }
-        
-        .feature-section {
-            background: white;
-            border: 1px solid #f0f0f0;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-        }
-        
-        .feature-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            padding: 8px;
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
             cursor: pointer;
             transition: all 0.2s;
-            text-align: center;
-            border-radius: 4px;
         }
-        
-        .feature-item:active {
-            background: #f5f5f5;
-            transform: scale(0.95);
-        }
-        
-        .feature-icon {
-            width: 44px;
-            height: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: #666;
-            position: relative;
-        }
-        
-        .feature-icon svg {
-            width: 24px;
-            height: 24px;
-            stroke: #666;
-            fill: none;
-            stroke-width: 1.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-        
-        .feature-label {
-            font-size: 11px;
-            font-weight: 500;
-            color: #333;
-            line-height: 1.3;
-        }
-        
-        .purchase-page {
-            padding: 20px 15px;
-        }
-        
-        .form-container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            overflow: hidden;
-        }
-        
-        .form-header {
-            background: #f5f5f5;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            font-size: 16px;
-            font-weight: 600;
-        }
-        
-        .form-body {
-            padding: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 16px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #666;
-            font-size: 13px;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            font-family: inherit;
-            -webkit-appearance: none;
-            appearance: none;
-            background-color: white;
-        }
-        
-        .form-group select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M1 4l5 4 5-4'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            padding-right: 30px;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #66bb6a;
-            box-shadow: 0 0 0 2px rgba(102, 187, 106, 0.1);
-        }
-        
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #f0f0f0;
-        }
-        
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            -webkit-appearance: none;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #66bb6a 0%, #43a047 100%);
+
+        .tab-item.active {
+            background: var(--primary-color);
             color: white;
         }
-        
-        .btn-primary:active {
-            opacity: 0.9;
+
+        .overview-content {
+            padding: var(--spacing-lg);
         }
-        
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #666;
-            border: 1px solid #ddd;
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: var(--spacing-md);
         }
-        
-        .btn-secondary:active {
-            background: #e8e8e8;
-        }
-        
-        .factory-page,
-        .sales-page,
-        .settings-page {
-            padding: 20px 15px;
-        }
-        
-        .info-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        .card-header {
-            background: #f5f5f5;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            font-size: 16px;
-            font-weight: 600;
-        }
-        
-        .card-body {
-            padding: 20px;
-        }
-        
-        .info-row {
+
+        .overview-left {
             display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .overview-right {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .data-card {
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            position: relative;
+        }
+
+        .data-card.sales {
+            background: var(--sales-bg);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
-            font-size: 14px;
         }
-        
-        .info-row:last-child {
-            border-bottom: none;
+
+        .data-card.purchase {
+            background: var(--purchase-bg);
         }
-        
-        .info-label {
-            color: #999;
+
+        .data-card.expense {
+            background: var(--expense-bg);
+        }
+
+        .data-card-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xs);
             font-weight: 500;
         }
-        
-        .info-value {
-            color: #333;
-            font-weight: 600;
-            text-align: right;
-            flex: 1;
-            margin-left: 10px;
+
+        .data-card-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: var(--spacing-xs);
         }
-        
+
+        .data-card-value.large {
+            font-size: 28px;
+        }
+
+        .data-card-sub {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .data-card-sub .divider {
+            width: 1px;
+            height: 12px;
+            background: var(--text-light);
+            opacity: 0.5;
+        }
+
+        .trend {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .trend.up {
+            color: #10B981;
+        }
+
+        .trend.down {
+            color: #EF4444;
+        }
+
+        .trend svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .add-btn {
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            font-size: 12px;
+            color: var(--primary-color);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .overview-footer {
+            text-align: center;
+            padding: var(--spacing-sm);
+            border-top: 1px solid #F0F0F0;
+            margin-top: var(--spacing-sm);
+        }
+
+        .overview-footer a {
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        /* ==================== 模块B：实时数据 ==================== */
+        .realtime-update {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-left: var(--spacing-sm);
+        }
+
+        .realtime-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+        }
+
+        .realtime-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg) var(--spacing-md);
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        .realtime-card-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
+        }
+
+        .realtime-card-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.3;
+            word-break: break-all;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .realtime-card-today {
+            font-size: 12px;
+            color: #10B981;
+            font-weight: 600;
+        }
+
+        /* ==================== 模块C：资金变动 ==================== */
+        .fund-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-md);
+        }
+
+        .fund-item {
+            text-align: center;
+            padding: var(--spacing-md);
+            background: #F8F9FA;
+            border-radius: var(--radius-md);
+        }
+
+        .fund-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
+        }
+
+        .fund-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        .fund-value.highlight {
+            color: var(--primary-color);
+        }
+
+        .fund-value.negative {
+            color: #EF4444;
+        }
+
+        /* ==================== 底部导航栏 ==================== */
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            height: 70px;
+            height: 60px;
             background: white;
-            border-top: 1px solid #eee;
+            border-top: 1px solid #E8E8E8;
             display: flex;
             justify-content: space-around;
             align-items: stretch;
             z-index: 200;
             max-width: 480px;
             margin: 0 auto;
-            box-shadow: 0 -1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
         }
-        
+
         .nav-item {
             flex: 1;
             display: flex;
@@ -364,74 +406,149 @@
             gap: 4px;
             cursor: pointer;
             transition: all 0.2s;
+            color: #9CA3AF;
             text-decoration: none;
-            color: #999;
             font-size: 10px;
             text-align: center;
         }
-        
+
         .nav-item.active {
-            color: #66bb6a;
+            color: var(--primary-color);
         }
-        
-        .nav-item.active .nav-icon svg {
-            color: #66bb6a;
-        }
-        
+
         .nav-icon {
-            font-size: 24px;
-            line-height: 1;
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 24px;
-            width: 24px;
         }
-        
+
         .nav-icon svg {
             width: 24px;
             height: 24px;
-            color: #999;
-            transition: color 0.2s;
+            stroke: currentColor;
+            transition: stroke 0.2s;
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
-        
+
         .nav-label {
-            font-size: 10px;
+            font-size: 11px;
             font-weight: 500;
             white-space: nowrap;
         }
-        
-        .message {
+
+        /* ==================== 其他页面 ==================== */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .factory-page,
+        .sales-page,
+        .settings-page {
+            padding: var(--spacing-lg);
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+            padding-left: var(--spacing-xs);
+            margin-top: var(--spacing-md);
+        }
+
+        .section-title:first-of-type {
+            margin-top: 0;
+        }
+
+        .feature-section {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-md);
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            border-radius: var(--radius-sm);
+        }
+
+        .feature-item:active {
+            background: #F5F5F5;
+            transform: scale(0.95);
+        }
+
+        .feature-icon {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feature-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--text-secondary);
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .feature-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        /* Toast */
+        .toast {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.8);
+            background: rgba(0, 0, 0, 0.8);
             color: white;
-            padding: 15px 20px;
-            border-radius: 6px;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
             font-size: 14px;
             z-index: 9999;
-            white-space: nowrap;
-            animation: popup 0.3s ease-out;
+            display: none;
         }
-        
-        @keyframes popup {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
+
+        .toast.show {
+            display: block;
         }
-        
+
         @media (max-width: 480px) {
             .app-wrapper {
                 max-width: 100vw;
             }
-            
+
             .bottom-nav {
                 max-width: 100vw;
             }
@@ -440,375 +557,399 @@
 </head>
 <body>
     <div class="app-wrapper">
-        <div class="header">
-            <div class="factory-selector">
-                <span class="factory-label">加工厂：</span>
-                <select class="factory-select" id="factorySelect">
-                    <option value="">时代果品加工厂</option>
-                    <option value="factory1">绿色果蔬加工厂</option>
-                    <option value="factory2">新鲜果园有限公司</option>
-                    <option value="factory3">其他加工厂</option>
-                </select>
+        <!-- 顶部导航栏 -->
+        <div class="top-nav-bar">
+            <div class="shop-name" id="shopName">老王测试产地店铺...</div>
+            <div class="user-avatar" onclick="showToast('个人中心')">
+                <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             </div>
         </div>
-        
+
+        <!-- 内容区域 -->
         <div class="content-area">
-            <div class="page home-page" id="homePage">
-                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #ccc; font-size: 14px;">
-                    首页内容暂时空着
+            <!-- 首页 -->
+            <div class="page active" id="homePage">
+                <!-- 模块A：经营概况 -->
+                <div class="card overview-card">
+                    <div class="card-header">
+                        <span class="card-title">经营概况</span>
+                        <div class="tab-switch">
+                            <div class="tab-item" onclick="switchTab(this, 'yesterday')">昨日</div>
+                            <div class="tab-item active" onclick="switchTab(this, 'today')">今日</div>
+                        </div>
+                    </div>
+                    <div class="overview-content">
+                        <div class="overview-grid">
+                            <!-- 左侧大卡片：销售 -->
+                            <div class="overview-left">
+                                <div class="data-card sales">
+                                    <div>
+                                        <div class="data-card-label">销售货款</div>
+                                        <div class="data-card-value large" id="salesAmount">1,259,425</div>
+                                        <div class="data-card-sub">
+                                            <span>销售量: <strong id="salesVolume">5,280</strong></span>
+                                            <span class="divider"></span>
+                                            <span>毛利: <strong id="salesProfit">185,620</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 右侧上下分布 -->
+                            <div class="overview-right">
+                                <!-- 采购卡片 -->
+                                <div class="data-card purchase">
+                                    <div class="data-card-label">采购货款</div>
+                                    <div class="data-card-value" id="purchaseAmount">658,420</div>
+                                    <div class="trend up">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 14l5-5 5 5z"/></svg>
+                                        <span id="purchaseChange">+12.5%</span>
+                                    </div>
+                                    <div class="data-card-sub" style="margin-top: 4px;">
+                                        <span>采购量: <strong id="purchaseVolume">3,200</strong></span>
+                                    </div>
+                                </div>
+                                <!-- 费用卡片 -->
+                                <div class="data-card expense">
+                                    <span class="add-btn" onclick="showToast('新增费用')">+新增</span>
+                                    <div class="data-card-label">费用支出</div>
+                                    <div class="data-card-value" id="expenseAmount">45,800</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="overview-footer">
+                            <a href="javascript:void(0)" onclick="showToast('查看下游销售数据统计')">
+                                下游销售数据统计 <span>&gt;</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 模块B：实时数据 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div style="display: flex; align-items: center;">
+                            <span class="card-title">实时数据</span>
+                            <span class="realtime-update" id="updateTime">2026-01-13 19:49更新</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="realtime-grid">
+                            <div class="realtime-card">
+                                <div class="realtime-card-label">应付款</div>
+                                <div class="realtime-card-value" id="payableAmount">1,580,360.00</div>
+                                <div class="realtime-card-today">今日 +8,500</div>
+                            </div>
+                            <div class="realtime-card">
+                                <div class="realtime-card-label">应收款</div>
+                                <div class="realtime-card-value" id="receivableAmount">2,156,890.00</div>
+                                <div class="realtime-card-today">今日 +15,200</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 模块C：资金变动 -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">资金变动</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="fund-grid">
+                            <div class="fund-item">
+                                <div class="fund-label">今日收入</div>
+                                <div class="fund-value" id="todayIncome">+28,500</div>
+                            </div>
+                            <div class="fund-item">
+                                <div class="fund-label">今日支出</div>
+                                <div class="fund-value" id="todayExpense">-12,300</div>
+                            </div>
+                            <div class="fund-item">
+                                <div class="fund-label">结余</div>
+                                <div class="fund-value highlight" id="todayBalance">+16,200</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="page purchase-page" id="purchasePage">
-                <div class="form-container">
-                    <div class="form-header">新增采购单</div>
-                    <div class="form-body">
-                        <form id="purchaseForm">
-                            <div class="form-group">
-                                <label for="productName">产品名称</label>
-                                <input type="text" id="productName" placeholder="请输入产品名称" required>
+
+            <!-- 加工厂页面 -->
+            <div class="page factory-page" id="factoryPage">
+                <div class="section-title">原料采购</div>
+                <div class="feature-section">
+                    <div class="features-grid">
+                        <div class="feature-item" onclick="showToast('订货单')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><path d="M4 2h12a2 2 0 012 2v16a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M8 6h4M8 10h4M8 14h2"/></svg>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="quantity">数量</label>
-                                <input type="number" id="quantity" placeholder="请输入数量" min="0" required>
+                            <span class="feature-label">订货单</span>
+                        </div>
+                        <div class="feature-item" onclick="window.location.href='purchase-list.html'">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><path d="M4 3a1 1 0 00-1 1v2h18V4a1 1 0 00-1-1H4zm18 5H3v10a2 2 0 002 2h14a2 2 0 002-2V8z"/><circle cx="7" cy="14" r="1.5"/><circle cx="12" cy="14" r="1.5"/><circle cx="17" cy="14" r="1.5"/></svg>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="unit">单位</label>
-                                <select id="unit" required>
-                                    <option value="">请选择单位</option>
-                                    <option value="kg">公斤(kg)</option>
-                                    <option value="ton">吨(t)</option>
-                                    <option value="box">箱</option>
-                                    <option value="piece">个</option>
-                                </select>
+                            <span class="feature-label">采购单</span>
+                        </div>
+                        <div class="feature-item" onclick="showToast('采购退货')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><path d="M4 2h12a2 2 0 012 2v16a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M8 6h4M8 10h4M8 14h2M14 8l2-2 2 2"/></svg>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="price">单价</label>
-                                <input type="number" id="price" placeholder="请输入单价" min="0" step="0.01" required>
+                            <span class="feature-label">采购退货</span>
+                        </div>
+                        <div class="feature-item" onclick="showToast('质检单')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" fill="none"/></svg>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="supplier">供应商</label>
-                                <input type="text" id="supplier" placeholder="请输入供应商名称" required>
+                            <span class="feature-label">质检单</span>
+                        </div>
+                        <div class="feature-item" onclick="showToast('应付款')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><path d="M6 2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2z"/><circle cx="12" cy="13" r="3"/><path d="M12 8v2m0 4v2"/></svg>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="deadline">交货期限</label>
-                                <input type="date" id="deadline" required>
+                            <span class="feature-label">应付款</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">分选/加工</div>
+                <div class="feature-section">
+                    <div class="features-grid">
+                        <div class="feature-item" onclick="showToast('规格分选')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><circle cx="6" cy="8" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="6" cy="15" r="2"/><circle cx="12" cy="15" r="2"/><circle cx="18" cy="15" r="2"/></svg>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="remarks">备注</label>
-                                <textarea id="remarks" placeholder="请输入备注信息"></textarea>
+                            <span class="feature-label">规格分选</span>
+                        </div>
+                        <div class="feature-item" onclick="showToast('成品加工')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>
                             </div>
-                            
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" onclick="resetForm()">重置</button>
-                                <button type="submit" class="btn btn-primary">提交</button>
+                            <span class="feature-label">成品加工</span>
+                        </div>
+                        <div class="feature-item" onclick="showToast('包装方案')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="2" width="12" height="18" rx="2"/><path d="M9 6h4M9 10h4M9 14h3"/></svg>
                             </div>
-                        </form>
+                            <span class="feature-label">包装方案</span>
+                        </div>
+                        <div class="feature-item" onclick="showToast('成本核算')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><rect x="2" y="3" width="18" height="16" rx="2"/><path d="M2 7h18M2 11h18M2 15h18"/></svg>
+                            </div>
+                            <span class="feature-label">成本核算</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">销售管理</div>
+                <div class="feature-section">
+                    <div class="features-grid">
+                        <div class="feature-item" onclick="showToast('预订单')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="14" height="14" rx="2"/><path d="M6 4v-2M14 4v-2M3 8h14M7 12h6M7 14h8"/></svg>
+                            </div>
+                            <span class="feature-label">预订单</span>
+                        </div>
+                        <div class="feature-item" onclick="showToast('销售单')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><path d="M4 2h12a2 2 0 012 2v16a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M8 6h4M8 10h4M8 14h2"/></svg>
+                            </div>
+                            <span class="feature-label">销售单</span>
+                        </div>
+                        <div class="feature-item" onclick="showToast('发货单')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><path d="M4 8h14M4 4h14a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z"/><path d="M16 12l3-2-3-2"/></svg>
+                            </div>
+                            <span class="feature-label">发货单</span>
+                        </div>
+                        <div class="feature-item" onclick="showToast('应收款')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M10 12h4"/></svg>
+                            </div>
+                            <span class="feature-label">应收款</span>
+                        </div>
+                        <div class="feature-item" onclick="showToast('次采销售')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><path d="M4 2h12a2 2 0 012 2v16a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M8 6h4M8 10h4M8 14h2"/></svg>
+                            </div>
+                            <span class="feature-label">次采销售</span>
+                        </div>
+                        <div class="feature-item" onclick="showToast('卖框')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><path d="M3 5h18M5 5v14a2 2 0 002 2h8a2 2 0 002-2V5M8 9v6M12 9v6M16 9v6"/></svg>
+                            </div>
+                            <span class="feature-label">卖框</span>
+                        </div>
+                        <div class="feature-item" onclick="showToast('回筐')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><path d="M4 2h12a2 2 0 012 2v16a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M8 6h4M8 10h4M8 14h2"/></svg>
+                            </div>
+                            <span class="feature-label">回筐</span>
+                        </div>
+                        <div class="feature-item" onclick="showToast('领框记录')">
+                            <div class="feature-icon">
+                                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="14" height="14" rx="2"/><path d="M3 8h14M7 12h6M7 14h8"/></svg>
+                            </div>
+                            <span class="feature-label">领框记录</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="page factory-page active" id="factoryPage">
-                <div style="padding: 15px;">
-                    <div class="section-title">原料采购</div>
-                    <div class="feature-section">
-                        <div class="features-grid">
-                            <div class="feature-item" onclick="showMessage('订货单')">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><path d="M4 2h12a2 2 0 012 2v16a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M8 6h4M8 10h4M8 14h2"/></svg>
-                                </div>
-                                <span class="feature-label">订货单</span>
-                            </div>
-                            <div class="feature-item" onclick="window.location.href='purchase-list.html'">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><path d="M4 3a1 1 0 00-1 1v2h18V4a1 1 0 00-1-1H4zm18 5H3v10a2 2 0 002 2h14a2 2 0 002-2V8z"/><circle cx="7" cy="14" r="1.5"/><circle cx="12" cy="14" r="1.5"/><circle cx="17" cy="14" r="1.5"/></svg>
-                                </div>
-                                <span class="feature-label">采购单</span>
-                            </div>
-                            <div class="feature-item" onclick="showMessage('采购退货')">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><path d="M4 2h12a2 2 0 012 2v16a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M8 6h4M8 10h4M8 14h2M14 8l2-2 2 2"/></svg>
-                                </div>
-                                <span class="feature-label">采购退货</span>
-                            </div>
-                            <div class="feature-item" onclick="showMessage('质检单')">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-                                </div>
-                                <span class="feature-label">质检单</span>
-                            </div>
-                            <div class="feature-item" onclick="showMessage('应付款')" style="margin-top: 4px;">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><path d="M6 2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2z"/><circle cx="12" cy="13" r="3"/><path d="M12 8v2m0 4v2"/></svg>
-                                </div>
-                                <span class="feature-label">应付款</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="section-title">分选/加工</div>
-                    <div class="feature-section">
-                        <div class="features-grid">
-                            <div class="feature-item" onclick="showMessage('规格分选')">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><circle cx="6" cy="8" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="6" cy="15" r="2"/><circle cx="12" cy="15" r="2"/><circle cx="18" cy="15" r="2"/><path d="M7 10L11 12M13 8L17 10M7 13L11 15M13 13L17 15"/></svg>
-                                </div>
-                                <span class="feature-label">规格分选</span>
-                            </div>
-                            <div class="feature-item" onclick="showMessage('成品加工')">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 16v4M2 12h4M16 12h4M5 5l3 3M16 16l3 3M19 5l-3 3M8 16l-3 3"/></svg>
-                                </div>
-                                <span class="feature-label">成品加工</span>
-                            </div>
-                            <div class="feature-item" onclick="showMessage('包装方案')">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><rect x="3" y="2" width="12" height="18" rx="2"/><path d="M9 6h4M9 10h4M9 14h3"/></svg>
-                                </div>
-                                <span class="feature-label">包装方案</span>
-                            </div>
-                            <div class="feature-item" onclick="showMessage('成本核算')">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="18" height="16" rx="2"/><path d="M2 7h18M2 11h18M2 15h18M6 7v12M10 7v12M14 7v12"/></svg>
-                                </div>
-                                <span class="feature-label">成本核算</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="section-title">销售管理</div>
-                    <div class="feature-section">
-                        <div class="features-grid">
-                            <div class="feature-item" onclick="showMessage('预订单')">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="14" height="14" rx="2"/><path d="M6 4v-2M14 4v-2M3 8h14M7 12h6M7 14h8"/></svg>
-                                </div>
-                                <span class="feature-label">预订单</span>
-                            </div>
-                            <div class="feature-item" onclick="showPage('salesPage')">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><path d="M4 2h12a2 2 0 012 2v16a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M8 6h4M8 10h4M8 14h2"/></svg>
-                                </div>
-                                <span class="feature-label">销售单</span>
-                            </div>
-                            <div class="feature-item" onclick="showMessage('发货单')">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><path d="M4 8h14M4 4h14a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2z"/><path d="M16 12l3-2-3-2"/></svg>
-                                </div>
-                                <span class="feature-label">发货单</span>
-                            </div>
-                            <div class="feature-item" onclick="showMessage('应收款')">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M10 12h4"/></svg>
-                                </div>
-                                <span class="feature-label">应收款</span>
-                            </div>
-                            <div class="feature-item" onclick="showMessage('次采销售')" style="margin-top: 4px;">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><path d="M4 2h12a2 2 0 012 2v16a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M8 6h4M8 10h4M8 14h2"/></svg>
-                                </div>
-                                <span class="feature-label">次采销售</span>
-                            </div>
-                            <div class="feature-item" onclick="showMessage('卖框')" style="margin-top: 4px;">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><path d="M3 5h18M5 5v14a2 2 0 002 2h8a2 2 0 002-2V5M8 9v6M12 9v6M16 9v6"/></svg>
-                                </div>
-                                <span class="feature-label">卖框</span>
-                            </div>
-                            <div class="feature-item" onclick="showMessage('回筐')" style="margin-top: 4px;">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><path d="M4 2h12a2 2 0 012 2v16a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M8 6h4M8 10h4M8 14h2"/></svg>
-                                </div>
-                                <span class="feature-label">回筐</span>
-                            </div>
-                            <div class="feature-item" onclick="showMessage('领框记录')" style="margin-top: 4px;">
-                                <div class="feature-icon">
-                                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="14" height="14" rx="2"/><path d="M3 8h14M7 12h6M7 14h8"/></svg>
-                                </div>
-                                <span class="feature-label">领框记录</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            
+
+            <!-- 找销路页面 -->
             <div class="page sales-page" id="salesPage">
-                <div class="info-card">
-                    <div class="card-header">销售渠道</div>
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">销售渠道</span>
+                    </div>
                     <div class="card-body">
-                        <div class="info-row">
-                            <span class="info-label">联系人</span>
-                            <span class="info-value">李经理</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">电话</span>
-                            <span class="info-value">138-1234-5678</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">公司</span>
-                            <span class="info-value">绿鲜生鲜超市</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">地址</span>
-                            <span class="info-value">北京市朝阳区建国路</span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">需求品类</span>
-                            <span class="info-value">有机蔬菜、水果</span>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                                <span style="color: var(--text-secondary);">联系人</span>
+                                <span style="font-weight: 600;">李经理</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                                <span style="color: var(--text-secondary);">电话</span>
+                                <span style="font-weight: 600;">138-1234-5678</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                                <span style="color: var(--text-secondary);">公司</span>
+                                <span style="font-weight: 600;">绿鲜生鲜超市</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                                <span style="color: var(--text-secondary);">地址</span>
+                                <span style="font-weight: 600; text-align: right; flex: 1; margin-left: 10px;">北京市朝阳区建国路</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                                <span style="color: var(--text-secondary);">需求品类</span>
+                                <span style="font-weight: 600;">有机蔬菜、水果</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <div class="page settings-page" id="settingsPage">
-                <div class="info-card">
-                    <div class="card-header">系统设置</div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label>应用版本</label>
-                            <input type="text" value="v1.0.0" disabled style="background: #f5f5f5; color: #999;">
-                        </div>
-                        <div class="form-group">
-                            <button type="button" class="btn btn-primary" onclick="checkUpdate()" style="margin-top: 10px;">检查更新</button>
-                        </div>
-                        <div class="form-group">
-                            <button type="button" class="btn btn-secondary" onclick="clearCache()" style="margin-top: 10px;">清除缓存</button>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
-        
+
+        <!-- 底部导航栏 -->
         <div class="bottom-nav">
-            <div class="nav-item" onclick="switchNav(this, 'homePage')">
+            <div class="nav-item active" onclick="switchNav(this, 'homePage')">
                 <div class="nav-icon">
-                    <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11h-6v-6h-6v6H3V9z"></path></svg>
                 </div>
                 <div class="nav-label">首页</div>
             </div>
-            <div class="nav-item active" onclick="switchNav(this, 'factoryPage')">
+            <div class="nav-item" onclick="switchNav(this, 'factoryPage')">
                 <div class="nav-icon">
-                    <svg viewBox="0 0 24 24"><path d="M12 2C7 2 2 6 2 12s5 10 10 10 10-4 10-10S17 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="currentColor"/><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z" fill="currentColor"/></svg>
+                    <svg viewBox="0 0 24 24"><path d="M12 2C7 2 2 6 2 12s5 10 10 10 10-4 10-10S17 2 12 2z"></path><path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6z"></path></svg>
                 </div>
                 <div class="nav-label">加工厂</div>
             </div>
             <div class="nav-item" onclick="switchNav(this, 'salesPage')">
                 <div class="nav-icon">
-                    <svg viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="2"/><path d="M2 12h20M3 4h18a1 1 0 011 1v13a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1z"/><path d="M6 12v4M12 12v4M18 12v4"/></g></svg>
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="2"></circle><path d="M2 12h20"></path><path d="M6 12v4M12 12v4M18 12v4"></path></svg>
                 </div>
                 <div class="nav-label">找销路</div>
             </div>
-            <div class="nav-item" onclick="switchNav(this, 'settingsPage')">
+            <div class="nav-item" onclick="window.location.href='settings.html'">
                 <div class="nav-icon">
-                    <svg viewBox="0 0 24 24"><g stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/></g></svg>
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"></path></svg>
                 </div>
                 <div class="nav-label">设置</div>
             </div>
         </div>
     </div>
-    
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
     <script>
-        function showPage(pageId) {
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(page => page.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-        }
-        
+        // ==================== Mock 数据 ====================
+        const mockData = {
+            today: {
+                salesAmount: '1,259,425',
+                salesVolume: '5,280',
+                salesProfit: '185,620',
+                purchaseAmount: '658,420',
+                purchaseChange: '+12.5%',
+                purchaseVolume: '3,200',
+                expenseAmount: '45,800',
+                payableAmount: '1,580,360.00',
+                receivableAmount: '2,156,890.00',
+                todayIncome: '+28,500',
+                todayExpense: '-12,300',
+                todayBalance: '+16,200'
+            },
+            yesterday: {
+                salesAmount: '985,320',
+                salesVolume: '4,120',
+                salesProfit: '152,800',
+                purchaseAmount: '520,180',
+                purchaseChange: '+8.3%',
+                purchaseVolume: '2,850',
+                expenseAmount: '38,500',
+                payableAmount: '1,571,860.00',
+                receivableAmount: '2,141,690.00',
+                todayIncome: '+22,800',
+                todayExpense: '-9,600',
+                todayBalance: '+13,200'
+            }
+        };
+
+        // ==================== 页面切换 ====================
         function switchNav(element, pageId) {
             const navItems = document.querySelectorAll('.nav-item');
             navItems.forEach(item => item.classList.remove('active'));
             element.classList.add('active');
-            showPage(pageId);
+
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
         }
-        
-        document.getElementById('purchaseForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = {
-                productName: document.getElementById('productName').value,
-                quantity: document.getElementById('quantity').value,
-                unit: document.getElementById('unit').value,
-                price: document.getElementById('price').value,
-                supplier: document.getElementById('supplier').value,
-                deadline: document.getElementById('deadline').value,
-                remarks: document.getElementById('remarks').value
-            };
-            
-            try {
-                const response = await fetch('http://localhost:5000/api/purchase/create', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok) {
-                    showMessage('✓ 采购单提交成功');
-                    document.getElementById('purchaseForm').reset();
-                    setTimeout(() => showPage('homePage'), 1500);
-                } else {
-                    showMessage('✗ 提交失败，请重试');
-                }
-            } catch (error) {
-                showMessage('✗ 网络错误');
-            }
-        });
-        
-        function resetForm() {
-            document.getElementById('purchaseForm').reset();
+
+        // ==================== 经营概况Tab切换 ====================
+        function switchTab(element, period) {
+            const tabs = element.parentElement.querySelectorAll('.tab-item');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            element.classList.add('active');
+
+            // 更新数据
+            const data = mockData[period];
+            document.getElementById('salesAmount').textContent = data.salesAmount;
+            document.getElementById('salesVolume').textContent = data.salesVolume;
+            document.getElementById('salesProfit').textContent = data.salesProfit;
+            document.getElementById('purchaseAmount').textContent = data.purchaseAmount;
+            document.getElementById('purchaseChange').textContent = data.purchaseChange;
+            document.getElementById('purchaseVolume').textContent = data.purchaseVolume;
+            document.getElementById('expenseAmount').textContent = data.expenseAmount;
         }
-        
-        function checkUpdate() {
-            showMessage('✓ 已是最新版本');
-        }
-        
-        function clearCache() {
-            localStorage.clear();
-            showMessage('✓ 缓存已清除');
-        }
-        
-        function showMessage(text) {
-            const message = document.createElement('div');
-            message.className = 'message';
-            message.textContent = text;
-            document.body.appendChild(message);
-            
+
+        // ==================== Toast提示 ====================
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
             setTimeout(() => {
-                message.remove();
+                toast.classList.remove('show');
             }, 2000);
         }
-        
-        function truncateFactoryName() {
-            const select = document.getElementById('factorySelect');
-            const selectedOption = select.options[select.selectedIndex];
-            const text = selectedOption.getAttribute('data-full-name') || selectedOption.text;
-            const maxChars = 8;
-            
-            if (text.length > maxChars) {
-                selectedOption.text = text.substring(0, maxChars) + '...';
-                select.title = text;
-            } else {
-                selectedOption.text = text;
-                select.title = '';
-            }
+
+        // ==================== 更新时间 ====================
+        function updateTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('updateTime').textContent = `${year}-${month}-${day} ${hour}:${minute}更新`;
         }
-        
+
+        // ==================== 初始化 ====================
         document.addEventListener('DOMContentLoaded', function() {
-            const select = document.getElementById('factorySelect');
-            Array.from(select.options).forEach(option => {
-                option.setAttribute('data-full-name', option.text);
-            });
-            
-            select.addEventListener('change', truncateFactoryName);
-            truncateFactoryName();
+            updateTime();
+            // 每分钟更新一次时间
+            setInterval(updateTime, 60000);
         });
     </script>
 </body>
