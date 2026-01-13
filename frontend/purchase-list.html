@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>采购单列表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            overflow: hidden;
+        }
+        
+        .app-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        /* 顶部导航栏 - 返回、Tab和图标 */
+        .top-nav-bar {
+            background: white;
+            display: flex;
+            align-items: center;
+            padding: 0 4px;
+            flex-shrink: 0;
+            height: 44px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .top-nav-back,
+        .top-nav-icon {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .top-nav-back svg,
+        .top-nav-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: #333;
+            fill: none;
+            stroke-width: 1.5;
+        }
+
+        .top-nav-back:active,
+        .top-nav-icon:active {
+            opacity: 0.6;
+        }
+
+        /* Tab容器在中间 */
+        .tabs-container {
+            flex: 1;
+            display: flex;
+            height: 44px;
+        }
+
+        .header-tab {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #999;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .header-tab.active {
+            color: #66bb6a;
+        }
+
+        .header-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background: #66bb6a;
+        }
+        
+        /* 筛选栏 */
+        .filter-bar {
+            background: white;
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            gap: 10px;
+        }
+        
+        .filter-date {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            min-width: 0;
+        }
+        
+        .filter-date:active {
+            background: #f0f0f0;
+        }
+        
+        .filter-date-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            color: #666;
+        }
+
+        .filter-date-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .filter-date-text {
+            font-size: 13px;
+            color: #666;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .filter-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        
+        .filter-dropdown:active {
+            background: #f0f0f0;
+        }
+        
+        .filter-dropdown-text {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+        
+        .filter-dropdown-icon {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* 内容区 */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 12px;
+            padding-bottom: 80px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* 卡片 */
+        .order-card {
+            background: white;
+            margin-bottom: 12px;
+            border-radius: 4px;
+            border: 1px solid #f0f0f0;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .order-card:active {
+            background: #f9f9f9;
+        }
+
+        .card-header {
+            background: white;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-date {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .card-arrow {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .card-body {
+            padding: 15px;
+        }
+        
+        .farm-info {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+        
+        .farm-info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+        
+        .farm-label {
+            color: #333;
+            min-width: 50px;
+            flex-shrink: 0;
+        }
+        
+        .farm-value {
+            color: #333;
+            flex: 1;
+        }
+        
+        .items-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+        
+        .items-table th {
+            padding: 8px 4px;
+            text-align: left;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .items-table td {
+            padding: 8px 4px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+        }
+        
+        .item-amount {
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .divider {
+            height: 1px;
+            background: #f0f0f0;
+            margin: 12px 0;
+        }
+        
+        .summary-row {
+            display: flex;
+            font-size: 12px;
+            color: #333;
+            line-height: 1.6;
+            word-break: break-all;
+        }
+        
+        .summary-label {
+            flex-shrink: 0;
+            margin-right: 8px;
+        }
+        
+        .summary-content {
+            flex: 1;
+            color: #333;
+        }
+        
+        /* 底部 */
+        .bottom-section {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #eee;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        
+        .bottom-action {
+            padding: 12px;
+        }
+        
+        .add-order-btn {
+            width: 100%;
+            padding: 10px;
+            background: #66bb6a;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .add-order-btn:active {
+            opacity: 0.9;
+        }
+        
+        /* 模态框 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: flex-end;
+            z-index: 500;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            width: 100%;
+            border-radius: 12px 12px 0 0;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .modal-header {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .modal-close {
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-body {
+            padding: 15px;
+        }
+        
+        .filter-item {
+            margin-bottom: 16px;
+        }
+        
+        .filter-item-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .filter-item-input,
+        .filter-item-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            -webkit-appearance: none;
+            appearance: none;
+            background-color: white;
+            color: #333;
+        }
+        
+        .filter-item-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M1 4l5 4 5-4'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+        }
+        
+        .filter-item-input:focus,
+        .filter-item-select:focus {
+            outline: none;
+            border-color: #66bb6a;
+            box-shadow: 0 0 0 2px rgba(102, 187, 106, 0.1);
+        }
+        
+        .modal-footer {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .modal-btn-cancel {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .modal-btn-confirm {
+            background: #66bb6a;
+            color: white;
+        }
+        
+        .modal-btn:active {
+            opacity: 0.8;
+        }
+
+        /* Loading效果 */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f0f0f0;
+            border-top-color: #66bb6a;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- 顶部导航栏 - 返回、Tab和图标在同一行 -->
+        <div class="top-nav-bar">
+            <div class="top-nav-back" onclick="goBack()">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </div>
+            <div class="tabs-container">
+                <div class="header-tab" onclick="switchTab('plan')">采收计划</div>
+                <div class="header-tab active" onclick="switchTab('order')">采购单</div>
+            </div>
+            <div class="top-nav-icon" onclick="openFilterModal()">
+                <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+            </div>
+        </div>
+
+        <!-- 筛选栏 -->
+        <div class="filter-bar">
+            <div class="filter-date" onclick="openFilterModal()">
+                <span class="filter-date-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                        <path d="M16 3v4M8 3v4M3 10h18"></path>
+                    </svg>
+                </span>
+                <span class="filter-date-text">12月12日~01月12日</span>
+            </div>
+            <div class="filter-dropdown" onclick="openFilterModal()">
+                <span class="filter-dropdown-text">最长长度的加购</span>
+                <span class="filter-dropdown-icon">▼</span>
+            </div>
+        </div>
+        
+        <!-- 内容 -->
+        <div class="content-area" id="contentArea"></div>
+        
+        <!-- 底部 -->
+        <div class="bottom-section">
+            <div class="bottom-action">
+                <button class="add-order-btn" onclick="goToCreate()">+ 新建采购单</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 筛选模态框 -->
+    <div class="modal-overlay" id="filterModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">筛选采购单</div>
+                <div class="modal-close" onclick="closeFilterModal()">✕</div>
+            </div>
+            <div class="modal-body">
+                <div class="filter-item">
+                    <label class="filter-item-label">开始日期</label>
+                    <input type="date" class="filter-item-input" id="startDate" value="2025-12-12">
+                </div>
+                <div class="filter-item">
+                    <label class="filter-item-label">结束日期</label>
+                    <input type="date" class="filter-item-input" id="endDate" value="2026-01-12">
+                </div>
+                <div class="filter-item">
+                    <label class="filter-item-label">排序方式</label>
+                    <select class="filter-item-select" id="sortSelect">
+                        <option value="length">最长长度的加购</option>
+                        <option value="date_asc">按日期升序</option>
+                        <option value="date_desc">按日期降序</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="closeFilterModal()">取消</button>
+                <button class="modal-btn modal-btn-confirm" onclick="applyFilter()">查询</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 生成更多示例数据
+        const farmers = ["张三农场", "李四果园", "王五种植园", "赵六蔬菜基地", "田七合作社", "测试原因1增改24", "阳光农场", "绿野农业", "丰收果园", "有机蔬菜基地"];
+        const buyers = ["老王", "老李", "小张", "小刘", "采购部A", "采购部B", "市场部", "仓储部"];
+        const products = [
+            {name: "西瓜", spec: "5斤/22kg", price: 22},
+            {name: "苹果", spec: "10斤/5kg", price: 35},
+            {name: "香蕉", spec: "5斤/2.5kg", price: 15},
+            {name: "橙子", spec: "8斤/4kg", price: 28},
+            {name: "葡萄", spec: "3斤/1.5kg", price: 25},
+            {name: "西红柿", spec: "5斤/2.5kg", price: 12},
+            {name: "黄瓜", spec: "10斤/5kg", price: 18},
+            {name: "白菜", spec: "15斤/7.5kg", price: 10},
+            {name: "萝卜", spec: "20斤/10kg", price: 15},
+            {name: "土豆", spec: "25斤/12.5kg", price: 20}
+        ];
+
+        const orders = [];
+        for (let i = 0; i < 15; i++) {
+            const date = new Date();
+            date.setDate(date.getDate() - Math.floor(i / 2));
+            const product = products[i % products.length];
+            const farmer = farmers[i % farmers.length];
+            const buyer = buyers[i % buyers.length];
+            orders.push({
+                id: `PO${1000 + i}`,
+                date: date.toISOString().split('T')[0],
+                farmer: farmer,
+                buyer: buyer,
+                items: [{name: product.name + "三十个字的的的的的", spec: product.spec, price: product.price, amount: product.price * (i % 5 + 1)}],
+                summary: {
+                    totalOrders: Math.floor(Math.random() * 100) + 20,
+                    totalQty: Math.floor(Math.random() * 10000) + 1000,
+                    grossWeight: Math.floor(Math.random() * 100000) + 10000,
+                    netWeight: Math.floor(Math.random() * 90000) + 9000,
+                    deposit: Math.floor(Math.random() * 1000000) + 100000,
+                    totalAmount: Math.floor(Math.random() * 100000000) + 10000000
+                }
+            });
+        }
+
+        function goBack() { window.location.href = 'index.html?page=factory'; }
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.header-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            if (tab === 'order') tabs[1].classList.add('active');
+            else tabs[0].classList.add('active');
+        }
+        function openFilterModal() { document.getElementById('filterModal').classList.add('show'); }
+        function closeFilterModal() { document.getElementById('filterModal').classList.remove('show'); }
+        function applyFilter() { closeFilterModal(); }
+
+        function goToDetail(orderId) {
+            window.location.href = `purchase-detail.html?id=${orderId}`;
+        }
+
+        function goToCreate() {
+            window.location.href = 'purchase-create.html';
+        }
+
+        function loadOrders() {
+            const contentArea = document.getElementById('contentArea');
+            const pageSize = 10;
+            let displayedCount = 0;
+
+            function renderBatch() {
+                const endIndex = Math.min(displayedCount + pageSize, orders.length);
+                const batch = orders.slice(displayedCount, endIndex);
+
+                const html = batch.map(o => {
+                    const d = new Date(o.date);
+                    return `<div class="order-card" onclick="goToDetail('${o.id}')">
+                        <div class="card-header">
+                            <div class="card-date">${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日</div>
+                            <div class="card-arrow">›</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="farm-info">
+                                <div class="farm-info-item"><span class="farm-label">农户:</span><span class="farm-value">${o.farmer}</span></div>
+                                <div class="farm-info-item"><span class="farm-label">采购单位:</span><span class="farm-value">${o.buyer}</span></div>
+                            </div>
+                            <div class="items-label">采购规格</div>
+                            <table class="items-table">
+                                <thead>
+                                    <tr><th style="width:35%;">采购规格</th><th style="width:25%;">采购量</th><th style="width:15%;">单价</th><th style="width:25%;">采购金额</th></tr>
+                                </thead>
+                                <tbody>
+                                    ${o.items.map(i => `<tr><td>${i.name}</td><td>${i.spec}</td><td>${i.price}</td><td class="item-amount">${i.amount}</td></tr>`).join('')}
+                                </tbody>
+                            </table>
+                            <div class="divider"></div>
+                            <div class="summary-row">
+                                <span class="summary-label">合计</span>
+                                <span class="summary-content">共${o.summary.totalOrders}单、数量:${o.summary.totalQty}、毛:${o.summary.grossWeight}kg、净:${o.summary.netWeight}kg、押金:${o.summary.deposit.toFixed(1)}、总货款:${o.summary.totalAmount.toFixed(1)}</span>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                contentArea.innerHTML += html;
+                displayedCount = endIndex;
+
+                // 如果还有更多数据，显示loading
+                if (displayedCount < orders.length) {
+                    const loadingHtml = `<div class="loading" id="loading">
+                        <span class="loading-spinner"></span>加载中...
+                    </div>`;
+                    contentArea.innerHTML += loadingHtml;
+
+                    setTimeout(() => {
+                        const loadingEl = document.getElementById('loading');
+                        if (loadingEl) loadingEl.remove();
+                        renderBatch();
+                    }, 800);
+                }
+            }
+
+            contentArea.innerHTML = '';
+            renderBatch();
+        }
+
+        document.addEventListener('DOMContentLoaded', loadOrders);
+        document.getElementById('filterModal').addEventListener('click', e => {
+            if (e.target.id === 'filterModal') closeFilterModal();
+        });
+    </script>
+</body>
+</html>

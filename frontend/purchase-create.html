@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>新建采购单</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            overflow: hidden;
+        }
+
+        .app-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 480px;
+            margin: 0 auto;
+            background: #f5f5f5;
+        }
+
+        /* 顶部导航栏 */
+        .top-nav-bar {
+            background: white;
+            display: flex;
+            align-items: center;
+            padding: 0 4px;
+            flex-shrink: 0;
+            height: 44px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .top-nav-back {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .top-nav-back svg {
+            width: 24px;
+            height: 24px;
+            stroke: #333;
+            fill: none;
+            stroke-width: 1.5;
+        }
+
+        .top-nav-back:active {
+            opacity: 0.6;
+        }
+
+        .top-nav-title {
+            flex: 1;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .top-nav-spacer {
+            width: 44px;
+            flex-shrink: 0;
+        }
+
+        /* 内容区 */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 12px;
+            padding-bottom: 80px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 表单卡片 */
+        .form-card {
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        /* 表单项 */
+        .form-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .form-item:last-child {
+            border-bottom: none;
+        }
+
+        .form-label {
+            font-size: 14px;
+            color: #333;
+            min-width: 80px;
+            flex-shrink: 0;
+        }
+
+        .form-value {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            cursor: pointer;
+        }
+
+        .form-value-text {
+            font-size: 14px;
+            color: #999;
+            margin-right: 4px;
+        }
+
+        .form-value-text.selected {
+            color: #333;
+        }
+
+        .form-value-arrow {
+            color: #999;
+            font-size: 16px;
+        }
+
+        .form-input {
+            flex: 1;
+            text-align: right;
+            font-size: 14px;
+            color: #333;
+            border: none;
+            outline: none;
+            background: transparent;
+        }
+
+        .form-input::placeholder {
+            color: #999;
+        }
+
+        /* 货品区域标题 */
+        .section-title {
+            font-size: 14px;
+            color: #666;
+            padding: 8px 4px;
+            margin-bottom: 8px;
+        }
+
+        /* 货品卡片 */
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            padding: 0;
+            margin-bottom: 12px;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .product-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .product-name {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .product-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .spec-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .spec-tag:active {
+            background: #e0e0e0;
+        }
+
+        .spec-tag.active {
+            background: #e8f5e9;
+            color: #66bb6a;
+            border: 1px solid #66bb6a;
+        }
+
+        .product-quantity {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            margin-left: 12px;
+        }
+
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            font-size: 14px;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 6px 8px;
+            outline: none;
+        }
+
+        .quantity-input:focus {
+            border-color: #66bb6a;
+        }
+
+        .quantity-unit {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .product-remove {
+            color: #ef5350;
+            font-size: 20px;
+            margin-left: 8px;
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 添加货品按钮 */
+        .add-product-card {
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .add-product-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            background: transparent;
+            color: #66bb6a;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-product-btn:active {
+            background: #f9f9f9;
+        }
+
+        .add-icon {
+            width: 18px;
+            height: 18px;
+            margin-right: 6px;
+        }
+
+        /* 底部操作栏 */
+        .bottom-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #eee;
+            padding: 10px 12px;
+            display: flex;
+            gap: 10px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-primary {
+            background: #66bb6a;
+            color: white;
+        }
+
+        .action-btn:active {
+            opacity: 0.8;
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: flex-end;
+            z-index: 500;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            width: 100%;
+            border-radius: 16px 16px 0 0;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .modal-close {
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .modal-item {
+            padding: 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-item:last-child {
+            border-bottom: none;
+        }
+
+        .modal-item:active {
+            background: #f9f9f9;
+        }
+
+        .modal-item-checkbox {
+            width: 20px;
+            height: 20px;
+            margin: 15px 12px 15px 16px;
+            flex-shrink: 0;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            border: 2px solid #ddd;
+            border-radius: 3px;
+            position: relative;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .modal-item-checkbox:checked {
+            border-color: #66bb6a;
+            background: #66bb6a;
+        }
+
+        .modal-item-checkbox:checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .modal-item-content {
+            flex: 1;
+            padding: 12px 12px 12px 0;
+            min-width: 0;
+        }
+
+        .modal-item-name {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .modal-item-spec {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .modal-footer {
+            padding: 12px 16px;
+            border-top: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .modal-confirm-btn {
+            width: 100%;
+            padding: 12px;
+            background: #66bb6a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .modal-confirm-btn:active {
+            opacity: 0.8;
+        }
+
+        /* 货品选择弹框 - 新样式 */
+        .product-modal-item {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .product-modal-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-modal-name {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .product-modal-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .product-modal-spec-tag {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .product-modal-spec-tag:active {
+            background: #e0e0e0;
+        }
+
+        /* 规格详情弹出框（图5）样式 */
+        .spec-detail-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 600;
+            display: none;
+            align-items: flex-end;
+        }
+
+        .spec-detail-modal.show {
+            display: flex;
+        }
+
+        .spec-detail-content {
+            background: #f5f5f5;
+            width: 100%;
+            border-radius: 16px 16px 0 0;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .spec-detail-header {
+            background: white;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .spec-detail-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+
+        .spec-detail-close {
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .spec-detail-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            padding-bottom: 280px;
+        }
+
+        /* 农户选择区域 */
+        .spec-farmer-section {
+            background: white;
+            border-radius: 8px;
+            padding: 0;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .spec-farser-select {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .spec-farser-select:last-child {
+            border-bottom: none;
+        }
+
+        .spec-farmer-label {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .spec-farmer-value {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+        }
+
+        .spec-farmer-arrow {
+            color: #999;
+            margin-left: 8px;
+        }
+
+        /* 货品信息 */
+        .spec-product-info {
+            background: white;
+            border-radius: 8px;
+            padding: 14px 15px;
+            margin-bottom: 12px;
+        }
+
+        .spec-product-name {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        /* 输入区域 */
+        .spec-input-section {
+            background: white;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+        }
+
+        .spec-input-row-1 {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .spec-input-row-1:last-child {
+            margin-bottom: 0;
+        }
+
+        .spec-input-row-2 {
+            display: flex;
+            gap: 12px;
+        }
+
+        .spec-input-group {
+            flex: 1;
+        }
+
+        .spec-input-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+
+        .spec-input-box {
+            display: flex;
+            align-items: center;
+            background: #f5f5f5;
+            border-radius: 6px;
+            padding: 10px 12px;
+            border: 1px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .spec-input-box.active {
+            border-color: #66bb6a;
+            background: white;
+        }
+
+        .spec-input-value {
+            flex: 1;
+            font-size: 15px;
+            color: #333;
+            min-width: 0;
+        }
+
+        .spec-input-value.placeholder {
+            color: #ccc;
+        }
+
+        .spec-input-unit {
+            font-size: 12px;
+            color: #999;
+            margin-left: 8px;
+            flex-shrink: 0;
+        }
+
+        /* 底部固定区域（键盘） */
+        .spec-detail-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        /* 数字键盘 */
+        .number-keyboard {
+            padding: 8px 12px 12px;
+        }
+
+        .keyboard-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .keyboard-key {
+            padding: 12px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 18px;
+            color: #333;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .keyboard-key:active {
+            background: #f0f0f0;
+        }
+
+        .keyboard-key.delete {
+            background: #fff;
+            color: #ef5350;
+        }
+
+        .keyboard-key.action-secondary {
+            background: #f0f0f0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .keyboard-key.action-secondary:active {
+            background: #e0e0e0;
+        }
+
+        .keyboard-key.action-primary {
+            background: #66bb6a;
+            color: white;
+            border-color: #66bb6a;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .keyboard-key.action-primary:active {
+            background: #5aa55e;
+        }
+
+        /* Toast提示 */
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            display: none;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        /* 已选货品为空时的提示 */
+        .empty-tip {
+            text-align: center;
+            padding: 30px 20px;
+            color: #999;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- 顶部导航栏 -->
+        <div class="top-nav-bar">
+            <div class="top-nav-back" onclick="goBack()">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </div>
+            <div class="top-nav-title">新建采购单</div>
+            <div class="top-nav-spacer"></div>
+        </div>
+
+        <!-- 内容区 -->
+        <div class="content-area">
+            <!-- 基本信息 -->
+            <div class="form-card">
+                <div class="form-item">
+                    <span class="form-label">加工厂</span>
+                    <div class="form-value" onclick="showFactoryModal()">
+                        <span class="form-value-text" id="factoryText">请选择</span>
+                        <span class="form-value-arrow">›</span>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <span class="form-label">类目</span>
+                    <div class="form-value" onclick="showCategoryModal()">
+                        <span class="form-value-text" id="categoryText">请选择</span>
+                        <span class="form-value-arrow">›</span>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <span class="form-label">农户</span>
+                    <div class="form-value" onclick="showFarmerModal()">
+                        <span class="form-value-text" id="farmerText">请选择</span>
+                        <span class="form-value-arrow">›</span>
+                    </div>
+                </div>
+                <div class="form-item">
+                    <span class="form-label">采果日期</span>
+                    <input type="date" class="form-input" id="harvestDate">
+                </div>
+            </div>
+
+            <!-- 采购货品 -->
+            <div class="section-title">采购货品</div>
+            <div id="selectedProductsContainer"></div>
+
+            <!-- 添加货品按钮 -->
+            <div class="add-product-card">
+                <button class="add-product-btn" onclick="showProductModal()">
+                    <svg class="add-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    添加货品
+                </button>
+            </div>
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="bottom-actions">
+            <button class="action-btn btn-secondary" id="submitAndContinueBtn" onclick="submitAndContinue()" disabled>再录一单</button>
+            <button class="action-btn btn-primary" id="submitBtn" onclick="submitOrder()" disabled>去结算</button>
+        </div>
+    </div>
+
+    <!-- 加工厂选择弹窗 -->
+    <div class="modal-overlay" id="factoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">选择加工厂</div>
+                <div class="modal-close" onclick="closeFactoryModal()">×</div>
+            </div>
+            <div class="modal-body" id="factoryList"></div>
+        </div>
+    </div>
+
+    <!-- 类目选择弹窗 -->
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">选择类目</div>
+                <div class="modal-close" onclick="closeCategoryModal()">×</div>
+            </div>
+            <div class="modal-body" id="categoryList"></div>
+        </div>
+    </div>
+
+    <!-- 农户选择弹窗 -->
+    <div class="modal-overlay" id="farmerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">选择农户</div>
+                <div class="modal-close" onclick="closeFarmerModal()">×</div>
+            </div>
+            <div class="modal-body" id="farmerList"></div>
+        </div>
+    </div>
+
+    <!-- 货品选择弹窗 -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">选择货品</div>
+                <div class="modal-close" onclick="closeProductModal()">×</div>
+            </div>
+            <div class="modal-body" id="productList"></div>
+        </div>
+    </div>
+
+    <!-- 规格详情弹出框（图5） -->
+    <div class="spec-detail-modal" id="specDetailModal">
+        <div class="spec-detail-content">
+            <div class="spec-detail-header">
+                <div class="spec-detail-title" id="specTitle">西瓜/5斤/22kg</div>
+                <div class="spec-detail-close" onclick="closeSpecDetailModal()">×</div>
+            </div>
+            <div class="spec-detail-body">
+                <!-- 农户选择区域 -->
+                <div class="spec-farmer-section">
+                    <div class="spec-farser-select">
+                        <span class="spec-farmer-label">农户</span>
+                        <div class="spec-farmer-value">
+                            <span id="specFarmerName">请选择农户</span>
+                            <span class="spec-farmer-arrow">›</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 输入区域 - 第一行：数量、毛重、箱框皮重 -->
+                <div class="spec-input-section">
+                    <div class="spec-input-row-1">
+                        <div class="spec-input-group">
+                            <div class="spec-input-label">数量</div>
+                            <div class="spec-input-box" onclick="showKeyboard('quantity', 'quantityValue', 'quantityBox')">
+                                <span class="spec-input-value" id="quantityValue">1</span>
+                                <span class="spec-input-unit" id="quantityUnit">箱</span>
+                            </div>
+                        </div>
+                        <div class="spec-input-group">
+                            <div class="spec-input-label">毛重</div>
+                            <div class="spec-input-box" onclick="showKeyboard('grossWeight', 'grossWeightValue', 'grossWeightBox')">
+                                <span class="spec-input-value" id="grossWeightValue">0</span>
+                                <span class="spec-input-unit">kg</span>
+                            </div>
+                        </div>
+                        <div class="spec-input-group">
+                            <div class="spec-input-label">箱框皮重</div>
+                            <div class="spec-input-box" onclick="showKeyboard('boxWeight', 'boxWeightValue', 'boxWeightBox')">
+                                <span class="spec-input-value" id="boxWeightValue">0</span>
+                                <span class="spec-input-unit">kg</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 第二行：单价、折扣金额、采购金额 -->
+                    <div class="spec-input-row-2">
+                        <div class="spec-input-group">
+                            <div class="spec-input-label">单价</div>
+                            <div class="spec-input-box" onclick="showKeyboard('unitPrice', 'unitPriceValue', 'unitPriceBox')">
+                                <span class="spec-input-value placeholder" id="unitPriceValue">请输入</span>
+                                <span class="spec-input-unit">元</span>
+                            </div>
+                        </div>
+                        <div class="spec-input-group">
+                            <div class="spec-input-label">折扣金额</div>
+                            <div class="spec-input-box" onclick="showKeyboard('discountAmount', 'discountAmountValue', 'discountAmountBox')">
+                                <span class="spec-input-value" id="discountAmountValue">0</span>
+                                <span class="spec-input-unit">元</span>
+                            </div>
+                        </div>
+                        <div class="spec-input-group">
+                            <div class="spec-input-label">采购金额</div>
+                            <div class="spec-input-box">
+                                <span class="spec-input-value" id="totalAmountValue">0</span>
+                                <span class="spec-input-unit">元</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 底部固定区域 -->
+            <div class="spec-detail-bottom">
+                <div class="number-keyboard">
+                    <div class="keyboard-grid">
+                        <div class="keyboard-key" onclick="inputNumber(1)">1</div>
+                        <div class="keyboard-key" onclick="inputNumber(2)">2</div>
+                        <div class="keyboard-key" onclick="inputNumber(3)">3</div>
+                        <div class="keyboard-key delete" onclick="deleteNumber()">⌫</div>
+                        <div class="keyboard-key" onclick="inputNumber(4)">4</div>
+                        <div class="keyboard-key" onclick="inputNumber(5)">5</div>
+                        <div class="keyboard-key" onclick="inputNumber(6)">6</div>
+                        <div class="keyboard-key action-secondary" onclick="addAnotherRecord()">再录一笔</div>
+                        <div class="keyboard-key" onclick="inputNumber(7)">7</div>
+                        <div class="keyboard-key" onclick="inputNumber(8)">8</div>
+                        <div class="keyboard-key" onclick="inputNumber(9)">9</div>
+                        <div class="keyboard-key action-primary" onclick="confirmNumber()">确认</div>
+                        <div class="keyboard-key" onclick="inputNumber('.')">.</div>
+                        <div class="keyboard-key" onclick="inputNumber(0)">0</div>
+                        <div class="keyboard-key" onclick="hideKeyboard()">完成</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast提示 -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 数据
+        const factories = [
+            {id: 1, name: "第一加工厂"},
+            {id: 2, name: "第二加工厂"},
+            {id: 3, name: "第三加工厂"}
+        ];
+
+        const categories = [
+            {id: 1, name: "水果"},
+            {id: 2, name: "蔬菜"}
+        ];
+
+        const farmers = [
+            {id: 1, name: "张三农场"},
+            {id: 2, name: "李四果园"},
+            {id: 3, name: "王五种植园"},
+            {id: 4, name: "赵六蔬菜基地"},
+            {id: 5, name: "田七合作社"},
+            {id: 6, name: "阳光农场"},
+            {id: 7, name: "绿野农业"},
+            {id: 8, name: "丰收果园"},
+            {id: 9, name: "有机蔬菜基地"},
+            {id: 10, name: "诚信果园"}
+        ];
+
+        const allProducts = {
+            "水果": [
+                {
+                    id: 1,
+                    name: "西瓜",
+                    specs: [
+                        {spec: "5斤/22kg", price: 22, unit: "箱"},
+                        {spec: "10斤/44kg", price: 42, unit: "箱"},
+                        {spec: "3斤/13kg", price: 14, unit: "箱"}
+                    ]
+                },
+                {
+                    id: 2,
+                    name: "苹果",
+                    specs: [
+                        {spec: "10斤/5kg", price: 35, unit: "箱"},
+                        {spec: "20斤/10kg", price: 68, unit: "箱"}
+                    ]
+                },
+                {
+                    id: 3,
+                    name: "香蕉",
+                    specs: [
+                        {spec: "5斤/2.5kg", price: 15, unit: "箱"},
+                        {spec: "10斤/5kg", price: 28, unit: "箱"}
+                    ]
+                },
+                {
+                    id: 4,
+                    name: "橙子",
+                    specs: [
+                        {spec: "8斤/4kg", price: 28, unit: "箱"},
+                        {spec: "16斤/8kg", price: 54, unit: "箱"}
+                    ]
+                },
+                {
+                    id: 5,
+                    name: "葡萄",
+                    specs: [
+                        {spec: "3斤/1.5kg", price: 25, unit: "箱"},
+                        {spec: "6斤/3kg", price: 48, unit: "箱"}
+                    ]
+                }
+            ],
+            "蔬菜": [
+                {
+                    id: 6,
+                    name: "西红柿",
+                    specs: [
+                        {spec: "5斤/2.5kg", price: 12, unit: "筐"},
+                        {spec: "10斤/5kg", price: 22, unit: "筐"}
+                    ]
+                },
+                {
+                    id: 7,
+                    name: "黄瓜",
+                    specs: [
+                        {spec: "10斤/5kg", price: 18, unit: "筐"},
+                        {spec: "20斤/10kg", price: 35, unit: "筐"}
+                    ]
+                },
+                {
+                    id: 8,
+                    name: "白菜",
+                    specs: [
+                        {spec: "15斤/7.5kg", price: 10, unit: "筐"},
+                        {spec: "30斤/15kg", price: 19, unit: "筐"}
+                    ]
+                },
+                {
+                    id: 9,
+                    name: "萝卜",
+                    specs: [
+                        {spec: "20斤/10kg", price: 15, unit: "筐"},
+                        {spec: "40斤/20kg", price: 28, unit: "筐"}
+                    ]
+                },
+                {
+                    id: 10,
+                    name: "土豆",
+                    specs: [
+                        {spec: "25斤/12.5kg", price: 20, unit: "筐"},
+                        {spec: "50斤/25kg", price: 38, unit: "筐"}
+                    ]
+                }
+            ]
+        };
+
+        // 当前正在编辑规格的货品索引
+        let currentEditingProductIndex = null;
+
+        // 表单数据
+        let formData = {
+            factoryId: null,
+            factoryName: '',
+            categoryId: null,
+            categoryName: '',
+            farmerId: null,
+            farmerName: '',
+            harvestDate: '',
+            products: []
+        };
+
+        // 初始化
+        function init() {
+            // 设置默认日期为今天
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const dateStr = `${year}-${month}-${day}`;
+            document.getElementById('harvestDate').value = dateStr;
+            formData.harvestDate = dateStr;
+
+            // 渲染列表
+            renderFactoryList();
+            renderCategoryList();
+            renderFarmerList();
+
+            // 监听日期变化
+            document.getElementById('harvestDate').addEventListener('change', function(e) {
+                formData.harvestDate = e.target.value;
+            });
+
+            // 点击遮罩关闭弹窗
+            setupModalClickOutside('factoryModal', closeFactoryModal);
+            setupModalClickOutside('categoryModal', closeCategoryModal);
+            setupModalClickOutside('farmerModal', closeFarmerModal);
+            setupModalClickOutside('productModal', closeProductModal);
+            setupModalClickOutside('specDetailModal', closeSpecDetailModal);
+        }
+
+        function setupModalClickOutside(modalId, closeFn) {
+            document.getElementById(modalId).addEventListener('click', function(e) {
+                if (e.target.id === modalId) closeFn();
+            });
+        }
+
+        function goBack() {
+            if (formData.factoryId || formData.products.length > 0) {
+                if (confirm('确定要取消新建采购单吗？已填写的内容将不会保存。')) {
+                    window.location.href = 'purchase-list.html';
+                }
+            } else {
+                window.location.href = 'purchase-list.html';
+            }
+        }
+
+        // 加工厂相关
+        function renderFactoryList() {
+            const html = factories.map(f => `
+                <div class="modal-item" onclick="selectFactory(${f.id}, '${f.name}')">
+                    <span class="modal-item-text">${f.name}</span>
+                    ${formData.factoryId === f.id ? '<span class="modal-item-checked">✓</span>' : ''}
+                </div>
+            `).join('');
+            document.getElementById('factoryList').innerHTML = html;
+        }
+
+        function showFactoryModal() {
+            renderFactoryList();
+            document.getElementById('factoryModal').classList.add('show');
+        }
+
+        function closeFactoryModal() {
+            document.getElementById('factoryModal').classList.remove('show');
+        }
+
+        function selectFactory(id, name) {
+            formData.factoryId = id;
+            formData.factoryName = name;
+            const textEl = document.getElementById('factoryText');
+            textEl.textContent = name;
+            textEl.classList.add('selected');
+            closeFactoryModal();
+            validateForm();
+        }
+
+        // 类目相关
+        function renderCategoryList() {
+            const html = categories.map(c => `
+                <div class="modal-item" onclick="selectCategory(${c.id}, '${c.name}')">
+                    <span class="modal-item-text">${c.name}</span>
+                    ${formData.categoryId === c.id ? '<span class="modal-item-checked">✓</span>' : ''}
+                </div>
+            `).join('');
+            document.getElementById('categoryList').innerHTML = html;
+        }
+
+        function showCategoryModal() {
+            renderCategoryList();
+            document.getElementById('categoryModal').classList.add('show');
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').classList.remove('show');
+        }
+
+        function selectCategory(id, name) {
+            // 切换类目时清空已选货品
+            if (formData.categoryName !== name && formData.products.length > 0) {
+                if (!confirm('切换类目将清空已选货品，确定要切换吗？')) {
+                    return;
+                }
+                formData.products = [];
+                renderSelectedProducts();
+            }
+
+            formData.categoryId = id;
+            formData.categoryName = name;
+            const textEl = document.getElementById('categoryText');
+            textEl.textContent = name;
+            textEl.classList.add('selected');
+            closeCategoryModal();
+            validateForm();
+        }
+
+        // 农户相关
+        function renderFarmerList() {
+            const html = farmers.map(f => `
+                <div class="modal-item" onclick="selectFarmer(${f.id}, '${f.name}')">
+                    <span class="modal-item-text">${f.name}</span>
+                    ${formData.farmerId === f.id ? '<span class="modal-item-checked">✓</span>' : ''}
+                </div>
+            `).join('');
+            document.getElementById('farmerList').innerHTML = html;
+        }
+
+        function showFarmerModal() {
+            renderFarmerList();
+            document.getElementById('farmerModal').classList.add('show');
+        }
+
+        function closeFarmerModal() {
+            document.getElementById('farmerModal').classList.remove('show');
+        }
+
+        function selectFarmer(id, name) {
+            formData.farmerId = id;
+            formData.farmerName = name;
+            const textEl = document.getElementById('farmerText');
+            textEl.textContent = name;
+            textEl.classList.add('selected');
+            closeFarmerModal();
+            validateForm();
+        }
+
+        // 货品相关
+        function showProductModal() {
+            if (!formData.categoryName) {
+                showToast('请先选择类目');
+                return;
+            }
+            renderProductList();
+            document.getElementById('productModal').classList.add('show');
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.remove('show');
+        }
+
+        function renderProductList() {
+            const products = allProducts[formData.categoryName] || [];
+            const html = products.map(p => `
+                <div class="product-modal-item">
+                    <div class="product-modal-name">${p.name}</div>
+                    <div class="product-modal-specs">
+                        ${p.specs.map((s, index) => `
+                            <span class="product-modal-spec-tag" onclick="openSpecDetailModal(${p.id}, '${p.name}', ${index})">${s.spec}</span>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('productList').innerHTML = html;
+        }
+
+        // 当前正在编辑的规格详情
+        let currentEditingSpec = null;
+        let currentInputField = null;
+        let currentInputValueElementId = null;
+        let currentInputBoxId = null;
+        let keyboardValue = '0';
+
+        function openSpecDetailModal(productId, productName, specIndex) {
+            const products = allProducts[formData.categoryName] || [];
+            const product = products.find(p => p.id === productId);
+            if (!product || !product.specs[specIndex]) return;
+
+            const spec = product.specs[specIndex];
+
+            currentEditingSpec = {
+                productId: productId,
+                productName: productName,
+                specIndex: specIndex,
+                spec: spec.spec,
+                unit: spec.unit,
+                quantity: 1,
+                grossWeight: 0,
+                boxWeight: 0,
+                netWeight: 0,
+                unitPrice: 0,
+                discountAmount: 0,
+                totalAmount: 0
+            };
+
+            // 显示货品名称/规格在标题栏
+            document.getElementById('specTitle').textContent = `${productName}/${spec.spec}`;
+
+            // 显示农户（如果已选择）
+            if (formData.farmerName) {
+                document.getElementById('specFarmerName').textContent = formData.farmerName;
+                document.getElementById('specFarmerName').classList.remove('placeholder');
+            } else {
+                document.getElementById('specFarmerName').textContent = '请选择农户';
+            }
+
+            // 重置所有输入值
+            updateSpecDetailInputs();
+            calculateTotalAmount();
+
+            // 清除激活状态
+            clearActiveInputBox();
+
+            // 显示弹出框
+            document.getElementById('specDetailModal').classList.add('show');
+        }
+
+        function closeSpecDetailModal() {
+            document.getElementById('specDetailModal').classList.remove('show');
+            currentEditingSpec = null;
+            clearActiveInputBox();
+        }
+
+        function clearActiveInputBox() {
+            document.querySelectorAll('.spec-input-box').forEach(box => {
+                box.classList.remove('active');
+            });
+        }
+
+        function setActiveInputBox(boxId) {
+            clearActiveInputBox();
+            document.getElementById(boxId).classList.add('active');
+        }
+
+        function updateSpecDetailInputs() {
+            document.getElementById('quantityValue').textContent = currentEditingSpec.quantity;
+            document.getElementById('quantityUnit').textContent = currentEditingSpec.unit;
+            document.getElementById('grossWeightValue').textContent = currentEditingSpec.grossWeight;
+            document.getElementById('boxWeightValue').textContent = currentEditingSpec.boxWeight;
+            document.getElementById('unitPriceValue').textContent = currentEditingSpec.unitPrice > 0 ? currentEditingSpec.unitPrice : '请输入';
+            document.getElementById('unitPriceValue').classList.toggle('placeholder', currentEditingSpec.unitPrice === 0);
+            document.getElementById('discountAmountValue').textContent = currentEditingSpec.discountAmount;
+            document.getElementById('totalAmountValue').textContent = currentEditingSpec.totalAmount.toFixed(2);
+        }
+
+        function calculateTotalAmount() {
+            // 采购金额 = 数量 × 单价 - 折扣金额
+            const total = currentEditingSpec.quantity * currentEditingSpec.unitPrice - currentEditingSpec.discountAmount;
+            currentEditingSpec.totalAmount = total > 0 ? total : 0;
+            document.getElementById('totalAmountValue').textContent = currentEditingSpec.totalAmount.toFixed(2);
+        }
+
+        function showKeyboard(field, valueElementId, boxId) {
+            currentInputField = field;
+            currentInputValueElementId = valueElementId;
+            currentInputBoxId = boxId;
+
+            // 设置激活状态
+            setActiveInputBox(boxId);
+
+            // 获取当前值
+            let value = 0;
+            if (field === 'quantity') value = currentEditingSpec.quantity;
+            else if (field === 'grossWeight') value = currentEditingSpec.grossWeight;
+            else if (field === 'boxWeight') value = currentEditingSpec.boxWeight;
+            else if (field === 'unitPrice') value = currentEditingSpec.unitPrice;
+            else if (field === 'discountAmount') value = currentEditingSpec.discountAmount;
+
+            keyboardValue = value === 0 && field !== 'unitPrice' ? '0' : String(value);
+            if (field === 'unitPrice' && value === 0) keyboardValue = '';
+        }
+
+        function hideKeyboard() {
+            currentInputField = null;
+            currentInputValueElementId = null;
+            currentInputBoxId = null;
+            clearActiveInputBox();
+        }
+
+        function updateKeyboardDisplay() {
+            if (currentInputValueElementId) {
+                const display = document.getElementById(currentInputValueElementId);
+                display.textContent = keyboardValue === '' ? '0' : keyboardValue;
+                display.classList.toggle('placeholder', keyboardValue === '' || keyboardValue === '0');
+
+                // 更新数据模型
+                const value = parseFloat(keyboardValue) || 0;
+                if (currentInputField === 'quantity') currentEditingSpec.quantity = value > 0 ? value : 1;
+                else if (currentInputField === 'grossWeight') currentEditingSpec.grossWeight = value;
+                else if (currentInputField === 'boxWeight') currentEditingSpec.boxWeight = value;
+                else if (currentInputField === 'unitPrice') currentEditingSpec.unitPrice = value;
+                else if (currentInputField === 'discountAmount') currentEditingSpec.discountAmount = value;
+
+                calculateTotalAmount();
+            }
+        }
+
+        function inputNumber(num) {
+            if (keyboardValue === '0' && num !== '.') {
+                keyboardValue = String(num);
+            } else if (keyboardValue === '' && num !== '.') {
+                keyboardValue = String(num);
+            } else {
+                keyboardValue += num;
+            }
+            updateKeyboardDisplay();
+        }
+
+        function deleteNumber() {
+            if (keyboardValue.length > 1) {
+                keyboardValue = keyboardValue.slice(0, -1);
+            } else {
+                keyboardValue = currentInputField === 'unitPrice' ? '' : '0';
+            }
+            updateKeyboardDisplay();
+        }
+
+        function confirmNumber() {
+            // 如果当前正在输入，先保存输入的值
+            if (currentInputField) {
+                const value = parseFloat(keyboardValue) || 0;
+                if (currentInputField === 'quantity') currentEditingSpec.quantity = value > 0 ? value : 1;
+                else if (currentInputField === 'grossWeight') currentEditingSpec.grossWeight = value;
+                else if (currentInputField === 'boxWeight') currentEditingSpec.boxWeight = value;
+                else if (currentInputField === 'unitPrice') currentEditingSpec.unitPrice = value;
+                else if (currentInputField === 'discountAmount') currentEditingSpec.discountAmount = value;
+
+                updateSpecDetailInputs();
+                calculateTotalAmount();
+                hideKeyboard();
+            } else {
+                // 没有输入焦点时，点击确认相当于关闭弹框
+                confirmAndCloseModal();
+            }
+        }
+
+        function confirmAndCloseModal() {
+            // 验证必须输入单价
+            if (currentEditingSpec.unitPrice === 0) {
+                showToast('请输入单价');
+                return;
+            }
+
+            // 添加到列表
+            addCurrentSpecToList();
+
+            // 关闭弹出框和货品选择弹框
+            closeSpecDetailModal();
+            closeProductModal();
+            renderSelectedProducts();
+            validateForm();
+        }
+
+        function addAnotherRecord() {
+            // 验证必须输入单价
+            if (currentEditingSpec.unitPrice === 0) {
+                showToast('请输入单价');
+                return;
+            }
+
+            // 添加到列表
+            addCurrentSpecToList();
+
+            // 重置表单，保留农户信息
+            resetSpecForm();
+
+            showToast('已添加，可继续录入');
+        }
+
+        function addCurrentSpecToList() {
+            // 检查是否已存在相同规格的货品
+            const existingIndex = formData.products.findIndex(p =>
+                p.id === currentEditingSpec.productId && p.spec === currentEditingSpec.spec
+            );
+
+            const productData = {
+                id: currentEditingSpec.productId,
+                name: currentEditingSpec.productName,
+                category: formData.categoryName,
+                spec: currentEditingSpec.spec,
+                price: currentEditingSpec.unitPrice,
+                unit: currentEditingSpec.unit,
+                quantity: currentEditingSpec.quantity,
+                grossWeight: currentEditingSpec.grossWeight,
+                boxWeight: currentEditingSpec.boxWeight,
+                netWeight: currentEditingSpec.netWeight,
+                discountAmount: currentEditingSpec.discountAmount,
+                totalAmount: currentEditingSpec.totalAmount
+            };
+
+            if (existingIndex > -1) {
+                formData.products[existingIndex] = productData;
+            } else {
+                formData.products.push(productData);
+            }
+        }
+
+        function resetSpecForm() {
+            // 重置数值，保留货品信息
+            currentEditingSpec.quantity = 1;
+            currentEditingSpec.grossWeight = 0;
+            currentEditingSpec.boxWeight = 0;
+            currentEditingSpec.netWeight = 0;
+            currentEditingSpec.unitPrice = 0;
+            currentEditingSpec.discountAmount = 0;
+            currentEditingSpec.totalAmount = 0;
+
+            updateSpecDetailInputs();
+        }
+
+        function confirmSpecDetail() {
+            confirmAndCloseModal();
+        }
+
+        function removeProduct(id, spec) {
+            const index = formData.products.findIndex(p => p.id === id && p.spec === spec);
+            if (index > -1) {
+                formData.products.splice(index, 1);
+                renderSelectedProducts();
+                validateForm();
+            }
+        }
+
+        function updateQuantity(id, spec, quantity) {
+            const product = formData.products.find(p => p.id === id && p.spec === spec);
+            if (product) {
+                const qty = parseInt(quantity) || 0;
+                product.quantity = qty > 0 ? qty : 1;
+            }
+        }
+
+        function renderSelectedProducts() {
+            const container = document.getElementById('selectedProductsContainer');
+
+            if (formData.products.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const html = `
+                <div class="product-card">
+                    ${formData.products.map((p, index) => `
+                        <div class="product-item">
+                            <div class="product-info">
+                                <div class="product-name">${p.name}</div>
+                                <div class="product-specs">
+                                    <span class="spec-tag active">${p.spec}</span>
+                                </div>
+                            </div>
+                            <div class="product-quantity">
+                                <input type="number"
+                                       class="quantity-input"
+                                       value="${p.quantity}"
+                                       min="1"
+                                       onchange="updateQuantity(${p.id}, '${p.spec}', this.value)">
+                                <span class="quantity-unit">${p.unit}</span>
+                                <div class="product-remove" onclick="removeProduct(${p.id}, '${p.spec}')">×</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // 表单验证
+        function validateForm() {
+            const isValid = formData.factoryId && formData.categoryId && formData.farmerId &&
+                          formData.harvestDate && formData.products.length > 0;
+            document.getElementById('submitBtn').disabled = !isValid;
+            document.getElementById('submitAndContinueBtn').disabled = !isValid;
+        }
+
+        // 提交订单
+        async function submitOrder() {
+            if (!validateFormFields()) return;
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = '提交中...';
+
+            await submitToBackend(false);
+
+            btn.disabled = false;
+            btn.textContent = '去结算';
+        }
+
+        // 再录一单
+        async function submitAndContinue() {
+            if (!validateFormFields()) return;
+
+            const btn = document.getElementById('submitAndContinueBtn');
+            btn.disabled = true;
+            btn.textContent = '提交中...';
+
+            await submitToBackend(true);
+
+            btn.disabled = false;
+            btn.textContent = '再录一单';
+        }
+
+        function validateFormFields() {
+            if (!formData.factoryId) {
+                showToast('请选择加工厂');
+                return false;
+            }
+            if (!formData.categoryId) {
+                showToast('请选择类目');
+                return false;
+            }
+            if (!formData.farmerId) {
+                showToast('请选择农户');
+                return false;
+            }
+            if (!formData.harvestDate) {
+                showToast('请选择采果日期');
+                return false;
+            }
+            if (formData.products.length === 0) {
+                showToast('请添加采购货品');
+                return false;
+            }
+            return true;
+        }
+
+        async function submitToBackend(shouldContinue) {
+            try {
+                const response = await fetch('http://127.0.0.1:5000/api/purchase/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        supplier_name: formData.farmerName,
+                        product_name: formData.products[0].name,
+                        quantity: formData.products[0].quantity,
+                        unit_price: formData.products[0].price,
+                        category: formData.categoryName,
+                        items: formData.products.map(p => ({
+                            name: p.name,
+                            spec: p.spec,
+                            price: p.price,
+                            amount: p.price * p.quantity
+                        }))
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.code === 200) {
+                    showToast('采购单创建成功');
+
+                    if (shouldContinue) {
+                        // 再录一单 - 重置表单但保留加工厂和类目
+                        resetFormPartial();
+                    } else {
+                        // 去结算 - 跳转到列表页
+                        setTimeout(() => {
+                            window.location.href = 'purchase-list.html';
+                        }, 1000);
+                    }
+                } else {
+                    showToast(result.message || '创建失败');
+                }
+            } catch (error) {
+                console.error('提交失败:', error);
+                showToast('网络错误，请检查后端服务');
+            }
+        }
+
+        function resetFormPartial() {
+            // 保留加工厂和类目，清空其他
+            formData.farmerId = null;
+            formData.farmerName = '';
+            formData.products = [];
+
+            document.getElementById('farmerText').textContent = '请选择';
+            document.getElementById('farmerText').classList.remove('selected');
+
+            renderSelectedProducts();
+            validateForm();
+        }
+
+        // Toast提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

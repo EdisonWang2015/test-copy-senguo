@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>采购单详情</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            overflow: hidden;
+        }
+
+        .app-wrapper {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+        }
+
+        /* 顶部导航栏 */
+        .top-nav-bar {
+            background: white;
+            display: flex;
+            align-items: center;
+            padding: 0 4px;
+            flex-shrink: 0;
+            height: 44px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .top-nav-back,
+        .top-nav-icon {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .top-nav-back svg,
+        .top-nav-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: #333;
+            fill: none;
+            stroke-width: 1.5;
+        }
+
+        .top-nav-back:active,
+        .top-nav-icon:active {
+            opacity: 0.6;
+        }
+
+        .top-nav-title {
+            flex: 1;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .top-nav-spacer {
+            width: 44px;
+            flex-shrink: 0;
+        }
+
+        /* 内容区 */
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* 状态栏 */
+        .status-bar {
+            background: #66bb6a;
+            color: white;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .order-id {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        /* 卡片 */
+        .card {
+            background: white;
+            margin-bottom: 8px;
+        }
+
+        .card-header {
+            background: #f9f9f9;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        /* 信息行 */
+        .info-row {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-label {
+            color: #666;
+            min-width: 70px;
+            flex-shrink: 0;
+        }
+
+        .info-value {
+            color: #333;
+            flex: 1;
+            word-break: break-all;
+        }
+
+        /* 表格 */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .items-table th {
+            padding: 10px 8px;
+            text-align: left;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 1px solid #eee;
+            background: #f9f9f9;
+        }
+
+        .items-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+        }
+
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* 合计行 */
+        .summary-section {
+            background: #f9f9f9;
+            padding: 12px 15px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .summary-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .summary-label {
+            color: #666;
+        }
+
+        .summary-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .summary-value.highlight {
+            color: #66bb6a;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        /* 底部操作栏 */
+        .bottom-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #eee;
+            padding: 10px 12px;
+            display: flex;
+            gap: 10px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:active {
+            opacity: 0.8;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-primary {
+            background: #66bb6a;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef5350;
+            color: white;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #f0f0f0;
+            border-top-color: #66bb6a;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <!-- 顶部导航栏 -->
+        <div class="top-nav-bar">
+            <div class="top-nav-back" onclick="goBack()">
+                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </div>
+            <div class="top-nav-title">采购单详情</div>
+            <div class="top-nav-icon">
+                <svg viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line></svg>
+            </div>
+            <div class="top-nav-spacer"></div>
+        </div>
+
+        <!-- 内容区 -->
+        <div class="content-area" id="contentArea">
+            <div class="loading">
+                <span class="loading-spinner"></span>加载中...
+            </div>
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="bottom-actions" id="bottomActions" style="display: none;">
+            <button class="action-btn btn-secondary" onclick="editOrder()">编辑</button>
+            <button class="action-btn btn-danger" onclick="deleteOrder()">删除</button>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据
+        const mockOrders = {};
+        const farmers = ["张三农场", "李四果园", "王五种植园", "赵六蔬菜基地", "田七合作社", "测试原因1增改24", "阳光农场", "绿野农业", "丰收果园", "有机蔬菜基地"];
+        const buyers = ["老王", "老李", "小张", "小刘", "采购部A", "采购部B", "市场部", "仓储部"];
+        const products = [
+            {name: "西瓜", spec: "5斤/22kg", price: 22},
+            {name: "苹果", spec: "10斤/5kg", price: 35},
+            {name: "香蕉", spec: "5斤/2.5kg", price: 15},
+            {name: "橙子", spec: "8斤/4kg", price: 28},
+            {name: "葡萄", spec: "3斤/1.5kg", price: 25},
+            {name: "西红柿", spec: "5斤/2.5kg", price: 12},
+            {name: "黄瓜", spec: "10斤/5kg", price: 18},
+            {name: "白菜", spec: "15斤/7.5kg", price: 10},
+            {name: "萝卜", spec: "20斤/10kg", price: 15},
+            {name: "土豆", spec: "25斤/12.5kg", price: 20}
+        ];
+
+        // 生成模拟数据
+        for (let i = 0; i < 15; i++) {
+            const date = new Date();
+            date.setDate(date.getDate() - Math.floor(i / 2));
+            const product = products[i % products.length];
+            const farmer = farmers[i % farmers.length];
+            const buyer = buyers[i % buyers.length];
+            mockOrders[`PO${1000 + i}`] = {
+                id: `PO${1000 + i}`,
+                date: date.toISOString().split('T')[0],
+                farmer: farmer,
+                buyer: buyer,
+                items: [{
+                    name: product.name + "三十个字的的的的的",
+                    spec: product.spec,
+                    price: product.price,
+                    amount: product.price * (i % 5 + 1)
+                }],
+                summary: {
+                    totalOrders: Math.floor(Math.random() * 100) + 20,
+                    totalQty: Math.floor(Math.random() * 10000) + 1000,
+                    grossWeight: Math.floor(Math.random() * 100000) + 10000,
+                    netWeight: Math.floor(Math.random() * 90000) + 9000,
+                    deposit: Math.floor(Math.random() * 1000000) + 100000,
+                    totalAmount: Math.floor(Math.random() * 100000000) + 10000000
+                },
+                status: '待审批'
+            };
+        }
+
+        function goBack() {
+            window.location.href = 'purchase-list.html';
+        }
+
+        function editOrder() {
+            alert('编辑功能待实现');
+        }
+
+        function deleteOrder() {
+            if (confirm('确定要删除此采购单吗？')) {
+                alert('删除成功');
+                goBack();
+            }
+        }
+
+        function loadDetail() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('id');
+            const order = mockOrders[orderId];
+
+            if (!order) {
+                document.getElementById('contentArea').innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 200px; color: #999;">
+                        采购单不存在
+                    </div>
+                `;
+                return;
+            }
+
+            const d = new Date(order.date);
+            const html = `
+                <!-- 状态栏 -->
+                <div class="status-bar">
+                    <span class="status-text">${order.status}</span>
+                    <span class="order-id">${order.id}</span>
+                </div>
+
+                <!-- 基本信息 -->
+                <div class="card">
+                    <div class="card-header">基本信息</div>
+                    <div class="card-body">
+                        <div class="info-row">
+                            <span class="info-label">采购日期</span>
+                            <span class="info-value">${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">农户</span>
+                            <span class="info-value">${order.farmer}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">采购单位</span>
+                            <span class="info-value">${order.buyer}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 采购明细 -->
+                <div class="card">
+                    <div class="card-header">采购明细</div>
+                    <div class="card-body" style="padding: 0;">
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th>采购规格</th>
+                                    <th class="text-right">采购量</th>
+                                    <th class="text-right">单价</th>
+                                    <th class="text-right">采购金额</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${order.items.map(item => `
+                                    <tr>
+                                        <td>${item.name}</td>
+                                        <td class="text-right">${item.spec}</td>
+                                        <td class="text-right">¥${item.price}</td>
+                                        <td class="text-right">¥${item.amount}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 合计信息 -->
+                <div class="summary-section">
+                    <div class="summary-row">
+                        <span class="summary-label">合计单数</span>
+                        <span class="summary-value">${order.summary.totalOrders}单</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">总数量</span>
+                        <span class="summary-value">${order.summary.totalQty}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">毛重</span>
+                        <span class="summary-value">${order.summary.grossWeight}kg</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">净重</span>
+                        <span class="summary-value">${order.summary.netWeight}kg</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">押金</span>
+                        <span class="summary-value">¥${order.summary.deposit.toFixed(2)}</span>
+                    </div>
+                    <div class="summary-row" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee;">
+                        <span class="summary-label">总货款</span>
+                        <span class="summary-value highlight">¥${order.summary.totalAmount.toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('contentArea').innerHTML = html;
+            document.getElementById('bottomActions').style.display = 'flex';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(loadDetail, 300);
+        });
+    </script>
+</body>
+</html>
