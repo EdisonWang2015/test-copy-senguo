@@ -907,6 +907,28 @@
             document.getElementById(pageId).classList.add('active');
         }
 
+        // 通过页面ID切换（用于从外部链接跳转）
+        function switchToPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+
+            // 更新底部导航状态
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+
+            // 根据页面ID激活对应的导航项
+            const pageToNavIndex = {
+                'homePage': 0,
+                'factoryPage': 1,
+                'salesPage': 2
+            };
+            const navIndex = pageToNavIndex[pageId];
+            if (navIndex !== undefined) {
+                navItems[navIndex].classList.add('active');
+            }
+        }
+
         // ==================== 经营概况Tab切换 ====================
         function switchTab(element, period) {
             const tabs = element.parentElement.querySelectorAll('.tab-item');
@@ -950,6 +972,16 @@
             updateTime();
             // 每分钟更新一次时间
             setInterval(updateTime, 60000);
+
+            // 检查URL参数，跳转到指定页面
+            const urlParams = new URLSearchParams(window.location.search);
+            const pageParam = urlParams.get('page');
+
+            if (pageParam === 'factory') {
+                switchToPage('factoryPage');
+            } else if (pageParam === 'sales') {
+                switchToPage('salesPage');
+            }
         });
     </script>
 </body>

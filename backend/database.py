@@ -162,8 +162,16 @@ def create_order(order_data):
         conn.close()
 
 
-def get_orders(category=None, status=None):
-    """获取采购单列表"""
+def get_orders(category=None, status=None, factory_name=None, start_date=None, end_date=None):
+    """
+    获取采购单列表
+    Args:
+        category: 类目筛选 (可选)
+        status: 状态筛选 (可选)
+        factory_name: 加工厂筛选 (可选)
+        start_date: 开始日期 (可选)
+        end_date: 结束日期 (可选)
+    """
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -178,6 +186,15 @@ def get_orders(category=None, status=None):
         if status:
             conditions.append('status = ?')
             params.append(status)
+        if factory_name:
+            conditions.append('factory_name = ?')
+            params.append(factory_name)
+        if start_date:
+            conditions.append('substr(created_at, 1, 10) >= ?')
+            params.append(start_date)
+        if end_date:
+            conditions.append('substr(created_at, 1, 10) <= ?')
+            params.append(end_date)
 
         if conditions:
             query += ' WHERE ' + ' AND '.join(conditions)

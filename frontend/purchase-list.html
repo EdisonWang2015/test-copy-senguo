@@ -518,10 +518,10 @@
                         <path d="M16 3v4M8 3v4M3 10h18"></path>
                     </svg>
                 </span>
-                <span class="filter-date-text">12月12日~01月12日</span>
+                <span class="filter-date-text">全部日期</span>
             </div>
             <div class="filter-dropdown" onclick="openFilterModal()">
-                <span class="filter-dropdown-text">最长长度的加购</span>
+                <span class="filter-dropdown-text">全部加工厂</span>
                 <span class="filter-dropdown-icon">▼</span>
             </div>
         </div>
@@ -547,18 +547,19 @@
             <div class="modal-body">
                 <div class="filter-item">
                     <label class="filter-item-label">开始日期</label>
-                    <input type="date" class="filter-item-input" id="startDate" value="2025-12-12">
+                    <input type="date" class="filter-item-input" id="startDate">
                 </div>
                 <div class="filter-item">
                     <label class="filter-item-label">结束日期</label>
-                    <input type="date" class="filter-item-input" id="endDate" value="2026-01-12">
+                    <input type="date" class="filter-item-input" id="endDate">
                 </div>
                 <div class="filter-item">
-                    <label class="filter-item-label">排序方式</label>
-                    <select class="filter-item-select" id="sortSelect">
-                        <option value="length">最长长度的加购</option>
-                        <option value="date_asc">按日期升序</option>
-                        <option value="date_desc">按日期降序</option>
+                    <label class="filter-item-label">加工厂</label>
+                    <select class="filter-item-select" id="factorySelect">
+                        <option value="">全部加工厂</option>
+                        <option value="第一加工厂">第一加工厂</option>
+                        <option value="第二加工厂">第二加工厂</option>
+                        <option value="第三加工厂">第三加工厂</option>
                     </select>
                 </div>
             </div>
@@ -619,7 +620,192 @@
         }
         function openFilterModal() { document.getElementById('filterModal').classList.add('show'); }
         function closeFilterModal() { document.getElementById('filterModal').classList.remove('show'); }
-        function applyFilter() { closeFilterModal(); }
+
+        // 全局存储订单数据用于筛选
+        let allOrders = [];
+        let filteredOrders = [];
+
+        async function applyFilter() {
+            /**
+             * 应用筛选条件查询订单
+             * 可以在以下场景调用：
+             * 1. 用户点击"查询"按钮时
+             * 2. 页面初始化时（使用默认筛选条件）
+             */
+            // 获取筛选参数
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const factory = document.getElementById('factorySelect').value;
+
+            // 如果没有选择任何筛选条件，显示所有数据
+            if (!startDate && !endDate && !factory) {
+                renderOrders(allOrders);
+                return;
+            }
+
+            // 更新筛选栏显示
+            const filterDateText = document.querySelector('.filter-date-text');
+            const filterDropdownText = document.querySelector('.filter-dropdown-text');
+
+            if (startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                filterDateText.textContent = `${start.getMonth() + 1}月${start.getDate()}日~${end.getMonth() + 1}月${end.getDate()}日`;
+            }
+
+            filterDropdownText.textContent = factory || '全部加工厂';
+
+            // 关闭弹窗（如果是手动点击查询按钮）
+            const modal = document.getElementById('filterModal');
+            if (modal.classList.contains('show')) {
+                closeFilterModal();
+            }
+
+            // 调用后端接口进行筛选
+            const contentArea = document.getElementById('contentArea');
+
+            try {
+                // 构建查询参数
+                const params = new URLSearchParams();
+                if (factory) params.append('factory_name', factory);
+                if (startDate) params.append('start_date', startDate);
+                if (endDate) params.append('end_date', endDate);
+
+                const url = `http://127.0.0.1:5000/api/purchase/list?${params.toString()}`;
+
+                contentArea.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#999;font-size:14px;"><span class="loading-spinner" style="margin-right:8px;"></span>查询中...</div>';
+
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.code === 200) {
+                    filteredOrders = result.data.orders;
+                    renderOrders(filteredOrders);
+                } else {
+                    contentArea.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#ef5350;font-size:14px;">${result.message}</div>`;
+                }
+            } catch (error) {
+                console.error('查询失败:', error);
+                contentArea.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#ef5350;font-size:14px;">查询失败，请检查后端服务</div>';
+            }
+        }
+
+            // 更新筛选栏显示
+            const filterDateText = document.querySelector('.filter-date-text');
+            const filterDropdownText = document.querySelector('.filter-dropdown-text');
+
+            if (startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                filterDateText.textContent = `${start.getMonth() + 1}月${start.getDate()}日~${end.getMonth() + 1}月${end.getDate()}日`;
+            }
+
+            filterDropdownText.textContent = factory || '全部加工厂';
+
+            // 关闭弹窗
+            closeFilterModal();
+
+            // 调用后端接口进行筛选
+            const contentArea = document.getElementById('contentArea');
+
+            try {
+                // 构建查询参数
+                const params = new URLSearchParams();
+                if (factory) params.append('factory_name', factory);
+                if (startDate) params.append('start_date', startDate);
+                if (endDate) params.append('end_date', endDate);
+
+                const url = `http://127.0.0.1:5000/api/purchase/list?${params.toString()}`;
+
+                contentArea.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#999;font-size:14px;"><span class="loading-spinner" style="margin-right:8px;"></span>查询中...</div>';
+
+                const response = await fetch(url);
+                const result = await response.json();
+
+                if (result.code === 200) {
+                    filteredOrders = result.data.orders;
+                    renderOrders(filteredOrders);
+                } else {
+                    contentArea.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#ef5350;font-size:14px;">${result.message}</div>`;
+                }
+            } catch (error) {
+                console.error('查询失败:', error);
+                contentArea.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#ef5350;font-size:14px;">查询失败，请检查后端服务</div>';
+            }
+        }
+
+        function renderOrders(orders) {
+            const contentArea = document.getElementById('contentArea');
+            contentArea.innerHTML = '';
+
+            if (orders.length === 0) {
+                contentArea.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#999;font-size:14px;">暂无匹配的采购单数据</div>';
+                return;
+            }
+
+            const pageSize = 10;
+            let displayedCount = 0;
+
+            function renderBatch() {
+                const endIndex = Math.min(displayedCount + pageSize, orders.length);
+                const batch = orders.slice(displayedCount, endIndex);
+
+                const html = batch.map(o => {
+                    const d = new Date(o.created_at);
+                    // 计算总计
+                    const totalQty = o.items.reduce((sum, i) => sum + i.quantity, 0);
+                    const totalGross = o.items.reduce((sum, i) => sum + i.gross_weight, 0);
+                    const totalNet = o.items.reduce((sum, i) => sum + (i.gross_weight - i.box_weight), 0);
+                    const totalAmount = o.total_amount || 0;
+
+                    return `<div class="order-card" onclick="goToDetail('${o.id}')">
+                        <div class="card-header">
+                            <div class="card-date">${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日</div>
+                            <div class="card-arrow">›</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="farm-info">
+                                <div class="farm-info-item"><span class="farm-label">农户:</span><span class="farm-value">${o.farmer_name}</span></div>
+                                <div class="farm-info-item"><span class="farm-label">加工厂:</span><span class="farm-value">${o.factory_name}</span></div>
+                            </div>
+                            <div class="items-label">采购规格</div>
+                            <table class="items-table">
+                                <thead>
+                                    <tr><th style="width:35%;">采购规格</th><th style="width:25%;">采购量</th><th style="width:15%;">单价</th><th style="width:25%;">采购金额</th></tr>
+                                </thead>
+                                <tbody>
+                                    ${o.items.map(i => `<tr><td>${i.product_name}</td><td>${i.spec}</td><td>¥${i.unit_price}</td><td class="item-amount">¥${i.total_amount}</td></tr>`).join('')}
+                                </tbody>
+                            </table>
+                            <div class="divider"></div>
+                            <div class="summary-row">
+                                <span class="summary-label">合计</span>
+                                <span class="summary-content">共1单、数量:${totalQty}、毛:${totalGross.toFixed(1)}kg、净:${totalNet.toFixed(1)}kg、总货款:¥${totalAmount.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                contentArea.innerHTML += html;
+                displayedCount = endIndex;
+
+                // 如果还有更多数据，显示loading
+                if (displayedCount < orders.length) {
+                    const loadingHtml = `<div class="loading" id="loading">
+                        <span class="loading-spinner"></span>加载中...
+                    </div>`;
+                    contentArea.innerHTML += loadingHtml;
+
+                    setTimeout(() => {
+                        const loadingEl = document.getElementById('loading');
+                        if (loadingEl) loadingEl.remove();
+                        renderBatch();
+                    }, 800);
+                }
+            }
+
+            renderBatch();
+        }
 
         function goToDetail(orderId) {
             window.location.href = `purchase-detail.html?id=${orderId}`;
@@ -629,88 +815,97 @@
             window.location.href = 'purchase-create.html';
         }
 
-        async function loadOrders() {
+        async function loadAllOrders() {
+            /**
+             * 加载所有订单数据，不进行筛选和渲染
+             * 用于初始化时获取完整数据
+             */
             const contentArea = document.getElementById('contentArea');
 
             try {
                 const response = await fetch('http://127.0.0.1:5000/api/purchase/list');
                 const result = await response.json();
 
-                if (result.code === 200 && result.data.orders.length > 0) {
-                    const orders = result.data.orders;
-                    const pageSize = 10;
-                    let displayedCount = 0;
+                // 存储所有订单数据
+                allOrders = result.data.orders || [];
+                filteredOrders = [...allOrders];
 
-                    function renderBatch() {
-                        const endIndex = Math.min(displayedCount + pageSize, orders.length);
-                        const batch = orders.slice(displayedCount, endIndex);
-
-                        const html = batch.map(o => {
-                            const d = new Date(o.created_at);
-                            // 计算总计
-                            const totalQty = o.items.reduce((sum, i) => sum + i.quantity, 0);
-                            const totalGross = o.items.reduce((sum, i) => sum + i.gross_weight, 0);
-                            const totalNet = o.items.reduce((sum, i) => sum + (i.gross_weight - i.box_weight), 0);
-                            const totalAmount = o.total_amount || 0;
-
-                            return `<div class="order-card" onclick="goToDetail('${o.id}')">
-                                <div class="card-header">
-                                    <div class="card-date">${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日</div>
-                                    <div class="card-arrow">›</div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="farm-info">
-                                        <div class="farm-info-item"><span class="farm-label">农户:</span><span class="farm-value">${o.farmer_name}</span></div>
-                                        <div class="farm-info-item"><span class="farm-label">加工厂:</span><span class="farm-value">${o.factory_name}</span></div>
-                                    </div>
-                                    <div class="items-label">采购规格</div>
-                                    <table class="items-table">
-                                        <thead>
-                                            <tr><th style="width:35%;">采购规格</th><th style="width:25%;">采购量</th><th style="width:15%;">单价</th><th style="width:25%;">采购金额</th></tr>
-                                        </thead>
-                                        <tbody>
-                                            ${o.items.map(i => `<tr><td>${i.product_name}</td><td>${i.spec}</td><td>¥${i.unit_price}</td><td class="item-amount">¥${i.total_amount}</td></tr>`).join('')}
-                                        </tbody>
-                                    </table>
-                                    <div class="divider"></div>
-                                    <div class="summary-row">
-                                        <span class="summary-label">合计</span>
-                                        <span class="summary-content">共1单、数量:${totalQty}、毛:${totalGross.toFixed(1)}kg、净:${totalNet.toFixed(1)}kg、总货款:¥${totalAmount.toFixed(2)}</span>
-                                    </div>
-                                </div>
-                            </div>`;
-                        }).join('');
-
-                        contentArea.innerHTML += html;
-                        displayedCount = endIndex;
-
-                        // 如果还有更多数据，显示loading
-                        if (displayedCount < orders.length) {
-                            const loadingHtml = `<div class="loading" id="loading">
-                                <span class="loading-spinner"></span>加载中...
-                            </div>`;
-                            contentArea.innerHTML += loadingHtml;
-
-                            setTimeout(() => {
-                                const loadingEl = document.getElementById('loading');
-                                if (loadingEl) loadingEl.remove();
-                                renderBatch();
-                            }, 800);
-                        }
-                    }
-
-                    contentArea.innerHTML = '';
-                    renderBatch();
-                } else {
-                    contentArea.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#999;font-size:14px;">暂无采购单数据</div>';
-                }
             } catch (error) {
                 console.error('加载失败:', error);
-                contentArea.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:200px;color:#ef5350;font-size:14px;">加载失败，请检查后端服务</div>';
+                allOrders = [];
+                filteredOrders = [];
+                throw error;
             }
         }
 
-        document.addEventListener('DOMContentLoaded', loadOrders);
+        /**
+         * 初始化默认筛选条件
+         * 1. 设置日期范围为最近一个月（从今天往前推一个月）
+         * 2. 设置加工厂为第一个存在的工厂
+         * 3. 自动触发筛选查询（带默认条件）
+         */
+        async function initializeDefaultFilter() {
+            // 等待所有订单数据加载完成
+            if (allOrders.length === 0) {
+                console.log('等待订单数据加载...');
+                return;
+            }
+
+            // 设置默认日期范围：从今天往前推一个月
+            const today = new Date();
+            const lastMonth = new Date(today);
+            lastMonth.setMonth(today.getMonth() - 1);
+
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+
+            startDateInput.value = formatDate(lastMonth);
+            endDateInput.value = formatDate(today);
+
+            // 设置默认加工厂：使用第一个存在的工厂
+            const factorySelect = document.getElementById('factorySelect');
+            const existingFactories = [...new Set(allOrders.map(o => o.factory_name))];
+            if (existingFactories.length > 0) {
+                // 使用第一个存在的工厂作为默认值
+                const firstFactory = existingFactories[0];
+                factorySelect.value = firstFactory;
+
+                // 更新筛选栏显示
+                const filterDateText = document.querySelector('.filter-date-text');
+                const filterDropdownText = document.querySelector('.filter-dropdown-text');
+
+                filterDateText.textContent = `${lastMonth.getMonth() + 1}月${lastMonth.getDate()}日~${today.getMonth() + 1}月${today.getDate()}日`;
+                filterDropdownText.textContent = firstFactory;
+
+                // 自动触发筛选查询（带默认条件）
+                await applyFilter();
+            } else {
+                // 没有订单时不设置工厂默认值
+                console.log('没有找到工厂数据');
+            }
+        }
+
+        /**
+         * 格式化日期为 YYYY-MM-DD
+         */
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // 第一步：加载所有订单数据（不筛选）
+            try {
+                await loadAllOrders();
+
+                // 第二步：初始化默认筛选条件并触发查询
+                await initializeDefaultFilter();
+            } catch (error) {
+                console.error('初始化失败:', error);
+            }
+        });
         document.getElementById('filterModal').addEventListener('click', e => {
             if (e.target.id === 'filterModal') closeFilterModal();
         });
